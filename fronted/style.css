@@ -1,0 +1,310 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Victor+Mono:ital,wght@0,300;0,400;0,600;1,400;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root{
+    --backgroun-color: #0a0a1b;
+}
+
+body {
+    /* background: var(--backgroun-color); */
+    background: #131417;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+}
+
+header {
+    height: 100%;
+    background: #1e1f26;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header .page-name{
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: #f2f2f2;
+    padding: 0px 10px;
+    margin: 8px 10px;
+    display: flex;
+    align-items: center;
+    user-select: none;
+    /* text-shadow: -2px 2px 2px rgba(255, 255, 255, .5); */
+    border: 2px solid rgba(255, 255, 255, .7);
+    border-radius: 4px;
+    box-shadow: -2px 2px 1.5px rgba(255, 255, 255, .5);
+}
+
+header .page-name .swift-icon {
+    width: 1.92rem;
+    height: 1.92rem;
+    background: transparent;
+    font-size: 2rem;
+    fill: #fff;
+    margin-right: 5px;
+}
+
+header .page-name .bold {
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+header .menu ul{
+    list-style-type: none;
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 8px;
+    padding-right: 10px;
+}
+
+header .menu ul li {
+    height: 100%;
+    display: flex;
+}
+
+.menu ul li a {
+    /* width: 110px; */
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    padding: 8px 12px;
+    background: #5239cc;
+    color: #fff;
+    border-radius: 5px;
+    text-align: center;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.menu ul li a div {
+    display: flex;
+    align-items: center;
+    /* align-content: center; */
+}
+
+.menu ul li a div i {
+    font-size: 20px;
+    margin-right: 5px;
+    font-weight: 300;
+}
+
+header .menu ul li a:hover {
+    background: #795eff;
+    cursor: pointer;
+}
+
+main {
+    width: 100%;
+    position: relative;
+}
+
+main .workspace {
+    width: 98%;
+    /* min-width: 500px; */
+    margin: 0 auto;
+}
+
+main .buttons {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin: 25px auto;
+}
+
+main .buttons .btn{
+    outline: none;
+    border: none;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+main .buttons .btn-run, 
+main .buttons .btn-clear {
+    width: 90px;
+    position: relative;
+    border-radius: 5px;
+    overflow: hidden;
+    text-align: center;
+    padding: 2px;
+    z-index: 2;
+    cursor: pointer;
+}
+
+main .buttons .btn-run::before, 
+main .buttons .btn-clear::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(115deg, #4fcf70, #fad648, #a767e5, #12bcfe, #44ce7b);
+    background-size: 100% 100%;
+}
+
+main .buttons .btn-clear::before {
+    background: linear-gradient(90deg, #f43b00, #5c43f0, #1c9ce4);
+}
+
+main .buttons .btn-run span:hover main .buttons .btn-run::before {
+    background: linear-gradient(115deg, #4fcf70, #075af5, #a767e5, #12bcfe, #44ce7b);
+}
+
+main .buttons .btn-run span, 
+main .buttons .btn-clear span{
+    display: block;
+    position: relative;
+    padding: 8px 10px;
+    background: #000;
+    border-radius: 3px;
+    color: #fff;
+    z-index: 2;
+    /* display: flex;
+    align-items: center;
+    text-align: center; */
+}
+
+main .buttons .btn span > i{
+    margin-right: 2px;
+    vertical-align: top;
+}
+
+/*? ----------------------- CODE WRAPPER ----------------------- */
+
+main .workspace .code-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 8px;
+}
+
+main .editor-container, 
+main .terminal-container{
+    width: 100%;
+    position: relative;
+}
+
+main .editor-container .editor, 
+main .terminal-container .terminal {
+    width: 100%;
+    height: 500px;
+    min-width: 100%;
+    min-height: 400px;
+    background: #1d1e22;
+    outline: none;
+    border: none;
+    border: 1px solid #3b3b3b;
+    border-radius: 0 5px 5px 5px;
+    resize: none;
+    padding: 15px 12px;
+    color: #f2f2f2;
+    font-family: 'Victor Mono', sans-serif;
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+main .tab {
+    position: absolute;
+    display: inline-block;
+    background: #ccc;
+    padding: 5px 15px;
+    border-radius: 5px 5px 0 0;
+    top: -35.5px;
+    border: 1px solid #3b3b3b;
+    border-bottom: none;
+}
+
+/*? ----------------------- MODAL -----------------------  */
+
+main .modal-container {
+    width: 100%;
+    height: calc(100% + 10px);
+    display: none;
+    background: tranparent;
+    backdrop-filter: blur(4px);
+    position: absolute;
+    top: -10px;
+    left: 0;
+    z-index: 2;
+}
+
+main .modal-container .modal {
+    width: 100%;
+    max-width: 1000px;
+    min-height: 200px;
+    position: relative;
+    margin: 0 auto;
+    padding: 20px 20px;
+    /* background: #dbdbdb; */
+    background: #131417;
+    /* ? Tambien se podria combinar los colores del fondo para no usar un morado, o cambiar el morado */
+    /* background: linear-gradient(245deg, #1e1f26, hsla(255, 30%, 25%, .9)); */
+    /* ? Este puede ser :) */
+    /* background: linear-gradient(245deg, #1e1f26, rgb(40, 38, 48, .9)); */
+    /* background: linear-gradient(360deg, #131417, #1e1f26); */
+    border: 1px solid #2c2c2c;
+    border-radius: 6px;
+    /* box-shadow: 0px 0px 5px rgba(255, 255, 255, .1); */
+}
+
+main .modal-container .modal .btn-close {
+    position: absolute;
+    background: transparent;
+    padding: 5px;
+    top: -25px;
+    right: -40px;
+}
+
+main .modal-container .modal .btn-close i {
+    font-size: 28px;
+    color: #fff;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+main .modal-container .modal .btn-close i:hover {
+    /* color: #5239cc; */
+    color: #f2f2f2;
+    text-shadow: 0px 0px 10px rgba(255, 255, 255, .25);
+}
+
+.modal-container .modal .title-container .title {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px 15px 10px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.modal .title-container .title i {
+    font-size: 2.4rem;
+    margin-right: 8px;
+    /* color: #0085ff; */
+    /* text-shadow: 0px 0px 8px rgba(0, 133, 255, .35); */
+    color: #6b4feb;
+    text-shadow: 0px 0px 8px rgba(107, 79, 235, .25);
+}
+
+.modal .title-container .title h2{
+    font-family: 'Roboto', sans-serif;
+    font-weight: 900;
+    /* text-shadow: 0px 0px 6px rgba(255, 255, 255, .25); */
+}
+
+/* MEDIAQUERIES */
+@media screen and (max-width: 933px) {
+    main .editor-container, 
+    main .terminal-container {
+        margin-bottom: 40px;
+    }
+}
+

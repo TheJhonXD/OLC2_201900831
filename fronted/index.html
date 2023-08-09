@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./assets/swift.svg" type="image/svg">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
+    <title>T-Swift IDE</title>
+</head>
+<body>
+    <header>
+        <h1 class="page-name">
+            <svg class="swift-icon">
+                <use xlink:href="./assets/swift.svg#swift-icon"></use>
+            </svg>
+            <span>T-Swift <span class="bold">IDE</span></span>
+        </h1>
+        <nav class="menu">
+            <ul>
+                <li><a href="#" id="btn-symbol"><div><i class='bx bx-table'></i> Simbolos</div></a></li>
+                <li><a href="#" id="btn-error"><div><i class='bx bx-bug'></i> Errores</div></a></li>
+                <li><a href="#" id="btn-report"><div><i class='bx bxs-report'></i> Reportes</div></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="workspace">
+            <div class="buttons">
+                <button class="btn btn-run" id="btn-run"><span><i class='bx bx-play'></i> Run</span></button>
+                <button class="btn btn-clear" id="btn-clear"><span><i class='bx bx-brush-alt'></i> Clear</span></button>
+            </div>
+            <div class="code-wrapper">
+                <div class="editor-container">
+                    <div class="tab">Editor</div>
+                    <textarea class="editor" id="editor"></textarea>
+                </div>
+                <div class="terminal-container">
+                    <div class="tab">Console</div>
+                    <textarea class="terminal" id="terminal" disabled></textarea>
+                </div>
+            </div>
+        </section>
+        <div class="modal-container" id="symbol-modal">
+            <div class="modal">
+                <div class="btn-close"><i class='bx bxs-x-circle'></i></div>
+                <div class="title-container">
+                    <div class="title">
+                        <i class='bx bx-table'></i>
+                        <h2>Tabla de Simbolos</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-container" id="error-modal">
+            <div class="modal">
+                <div class="btn-close"><i class='bx bxs-x-circle'></i></div>
+                <div class="title-container">
+                    <div class="title">
+                        <i class='bx bx-bug'></i>
+                        <h2>Tabla de Errores</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-container" id="report-modal">
+            <div class="modal">
+                <div class="btn-close"><i class='bx bxs-x-circle'></i></div>
+                <div class="title-container">
+                    <div class="title">
+                        <i class='bx bxs-report'></i>
+                        <h2>Reporte</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="main.js"></script>
+</body>
+</html>
