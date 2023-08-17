@@ -1,0 +1,78 @@
+// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// Get_NUMBER returns the _NUMBER token.
+	Get_NUMBER() antlr.Token
+
+	// Get_STRING returns the _STRING token.
+	Get_STRING() antlr.Token
+
+	// Get_TRU returns the _TRU token.
+	Get_TRU() antlr.Token
+
+	// Get_FAL returns the _FAL token.
+	Get_FAL() antlr.Token
+
+	// GetOp returns the op token.
+	GetOp() antlr.Token
+
+	// Set_NUMBER sets the _NUMBER token.
+	Set_NUMBER(antlr.Token)
+
+	// Set_STRING sets the _STRING token.
+	Set_STRING(antlr.Token)
+
+	// Set_TRU sets the _TRU token.
+	Set_TRU(antlr.Token)
+
+	// Set_FAL sets the _FAL token.
+	Set_FAL(antlr.Token)
+
+	// SetOp sets the op token.
+	SetOp(antlr.Token)
+
+	// GetLeft returns the left rule contexts.
+	GetLeft() IExprContext
+
+	// Get_expr returns the _expr rule contexts.
+	Get_expr() IExprContext
+
+	// GetRight returns the right rule contexts.
+	GetRight() IExprContext
+
+	// SetLeft sets the left rule contexts.
+	SetLeft(IExprContext)
+
+	// Set_expr sets the _expr rule contexts.
+	Set_expr(IExprContext)
+
+	// SetRight sets the right rule contexts.
+	SetRight(IExprContext)
+
+	// GetE returns the e attribute.
+	GetE() interfaces.Expression
+
+	// SetE sets the e attribute.
+	SetE(interfaces.Expression)
+
+# **********************************************  
+type Token interface {
+	GetSource() *TokenSourceCharStreamPair
+	GetTokenType() int
+	GetChannel() int
+	GetStart() int
+	GetStop() int
+	GetLine() int
+	GetColumn() int
+
+	GetText() string
+	SetText(s string)
+
+	GetTokenIndex() int
+	SetTokenIndex(v int)
+
+	GetTokenSource() TokenSource
+	GetInputStream() CharStream
+
+	String() string
+}    

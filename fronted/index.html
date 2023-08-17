@@ -17,30 +17,56 @@
             <span>T-Swift <span class="bold">IDE</span></span>
         </h1>
         <nav class="menu">
-            <ul>
+            <!-- <ul>
                 <li><a href="#" id="btn-symbol"><div><i class='bx bx-table'></i> Simbolos</div></a></li>
                 <li><a href="#" id="btn-error"><div><i class='bx bx-bug'></i> Errores</div></a></li>
                 <li><a href="#" id="btn-report"><div><i class='bx bxs-report'></i> Reportes</div></a></li>
+            </ul> -->
+            <ul>
+                <li>
+                    <a href="#" id="btn-file"><div> <span>File</span> <i class='bx bx-chevron-down'></i></div></a>
+                    <ul class="submenu">
+                        <li><i class='bx bx-folder-open'></i> Open</li>
+                        <li><i class='bx bx-save' ></i> Save</li>
+                        <li><i class='bx bx-save' ></i> Save as</li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" id="btn-reports"><div> <span>Reports</span> <i class='bx bx-chevron-down'></i></div></a>
+                    <ul class="submenu">
+                        <li id="btn-symbol"><i class='bx bx-table'></i> Tabla de Simbolos</li>
+                        <li id="btn-error"><i class='bx bx-bug'></i> Errores</li>
+                        <li id="btn-report"><i class='bx bx-vector'></i> CST</li>
+                    </ul>
+                </li>
+                <!-- <li><a href="#" id="btn-error"><div> Acerca de</div></a></li> -->
             </ul>
         </nav>
     </header>
     <main>
+
         <section class="workspace">
             <div class="buttons">
-                <button class="btn btn-run" id="btn-run"><span><i class='bx bx-play'></i> Run</span></button>
-                <button class="btn btn-clear" id="btn-clear"><span><i class='bx bx-brush-alt'></i> Clear</span></button>
+                <button class="btn btn-run" id="btn-run">
+                    <span><i class='bx bx-play'></i> Run</span>
+                </button>
+                <button class="btn btn-clear" id="btn-clear">
+                    <span><i class='bx bx-brush-alt'></i> Clear</span>
+                </button>
             </div>
+
             <div class="code-wrapper">
                 <div class="editor-container">
-                    <div class="tab">Editor</div>
-                    <textarea class="editor" id="editor"></textarea>
+                    <div class="tab"><span><i class="fa-brands fa-swift"></i> main.swift</span></div>
+                    <textarea class="editor" id="editor" spellcheck="false"></textarea>
                 </div>
                 <div class="terminal-container">
-                    <div class="tab">Console</div>
-                    <textarea class="terminal" id="terminal" disabled></textarea>
+                    <div class="tab"><span><i class='bx bxs-terminal'></i> Console</span></div>
+                    <textarea class="terminal" id="terminal" readonly></textarea>
                 </div>
             </div>
         </section>
+
         <div class="modal-container" id="symbol-modal">
             <div class="modal">
                 <div class="btn-close"><i class='bx bxs-x-circle'></i></div>
@@ -74,7 +100,9 @@
                 </div>
             </div>
         </div>
+
     </main>
+    <script src="https://kit.fontawesome.com/e981d9670e.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
     <script src="main.js"></script>
 </body>
