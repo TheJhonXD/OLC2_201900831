@@ -34,8 +34,8 @@ FUNC: 'func';
 
 // primitives
 NUMBER : [0-9]+ ('.'[0-9]+)?;
+CHAR: '"'(.)'"';
 STRING: '"'~["]*'"';
-CHAR: '(\\(["\'\\bfnrt]|u[0-9A-Fa-f]{4})|[^\\\'])';
 ID: ([a-zA-Z_])[a-zA-Z0-9_]*;
 
 // symbols
@@ -50,6 +50,7 @@ MAY_IG:     '>=';
 MEN_IG:     '<=';
 MAYOR:          '>';
 MENOR:          '<';
+MOD:            '%';
 MUL:            '*';
 DIV:            '/';
 ADD:            '+';

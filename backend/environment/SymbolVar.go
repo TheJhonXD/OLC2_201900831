@@ -1,9 +1,8 @@
 package environment
 
-type Symbol struct {
+type SymbolVar struct {
 	Line  int
 	Col   int
 	Type  TipoExpresion
 	Value interface{}
-	Const bool
 }

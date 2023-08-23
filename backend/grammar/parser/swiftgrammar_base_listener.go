@@ -62,6 +62,18 @@ func (s *BaseSwiftGrammarListener) EnterTipo(ctx *TipoContext) {}
 // ExitTipo is called when production tipo is exited.
 func (s *BaseSwiftGrammarListener) ExitTipo(ctx *TipoContext) {}
 
+// EnterVarasgmt is called when production varasgmt is entered.
+func (s *BaseSwiftGrammarListener) EnterVarasgmt(ctx *VarasgmtContext) {}
+
+// ExitVarasgmt is called when production varasgmt is exited.
+func (s *BaseSwiftGrammarListener) ExitVarasgmt(ctx *VarasgmtContext) {}
+
+// EnterConststmt is called when production conststmt is entered.
+func (s *BaseSwiftGrammarListener) EnterConststmt(ctx *ConststmtContext) {}
+
+// ExitConststmt is called when production conststmt is exited.
+func (s *BaseSwiftGrammarListener) ExitConststmt(ctx *ConststmtContext) {}
+
 // EnterExpr is called when production expr is entered.
 func (s *BaseSwiftGrammarListener) EnterExpr(ctx *ExprContext) {}
 

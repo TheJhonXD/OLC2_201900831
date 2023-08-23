@@ -37,10 +37,12 @@ func analyzer(code string) string {
 	Code := listener.Code
 	//create ast
 	var Ast environment.AST
+	//create environment
+	env := environment.NewEnv(nil, "GLOBAL")
 	//ejecución del codigo
 	for _, inst := range Code {
 		// fmt.Println(reflect.TypeOf(inst))
-		inst.(interfaces.Instruction).Ejecutar(&Ast, nil)
+		inst.(interfaces.Instruction).Ejecutar(&Ast, env)
 	}
 	return Ast.GetPrint()
 }

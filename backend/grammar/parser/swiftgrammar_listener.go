@@ -28,6 +28,12 @@ type SwiftGrammarListener interface {
 	// EnterTipo is called when entering the tipo production.
 	EnterTipo(c *TipoContext)
 
+	// EnterVarasgmt is called when entering the varasgmt production.
+	EnterVarasgmt(c *VarasgmtContext)
+
+	// EnterConststmt is called when entering the conststmt production.
+	EnterConststmt(c *ConststmtContext)
+
 	// EnterExpr is called when entering the expr production.
 	EnterExpr(c *ExprContext)
 
@@ -51,6 +57,12 @@ type SwiftGrammarListener interface {
 
 	// ExitTipo is called when exiting the tipo production.
 	ExitTipo(c *TipoContext)
+
+	// ExitVarasgmt is called when exiting the varasgmt production.
+	ExitVarasgmt(c *VarasgmtContext)
+
+	// ExitConststmt is called when exiting the conststmt production.
+	ExitConststmt(c *ConststmtContext)
 
 	// ExitExpr is called when exiting the expr production.
 	ExitExpr(c *ExprContext)
