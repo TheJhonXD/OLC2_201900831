@@ -41,16 +41,39 @@ instruction returns [interfaces.Instruction inst]
 | varstmt { $inst = $varstmt.var}
 | varasgmt { $inst = $varasgmt.asgmt}
 | conststmt { $inst = $conststmt.const}
+| switchstmt { $inst = $switchstmt.switchinstr}
 ;
 
+//* Instrucción print
 printstmt returns [interfaces.Instruction prnt]
 : PRINT PARIZQ expr PARDER { $prnt = instructions.NewPrint($PRINT.line,$PRINT.pos,$expr.e)}
 ;
 
+//* Sentencia if else
 ifstmt returns [interfaces.Instruction ifinstr]
-: IF  expr LLAVEIZQ block LLAVEDER { $ifinstr = instructions.NewIf($IF.line, $IF.pos, $expr.e, $block.blk) }
-| IF expr LLAVEIZQ block LLAVEDER ELSE LLAVEIZQ block LLAVEDER
-| IF expr LLAVEIZQ block LLAVEDER ELSE ifstmt
+: IF expr LLAVEIZQ block LLAVEDER { $ifinstr = instructions.NewIf($IF.line, $IF.pos, $expr.e, $block.blk, nil, nil) }
+| IF expr LLAVEIZQ firstBlk=block LLAVEDER elif+=elseifstmt+ ELSE elsestmt?{ 
+    var ifInterfaces []interface{}
+    // fmt.Println($elif)
+    for _, e := range localctx.(*IfstmtContext).GetElif() {
+        ifInterfaces = append(ifInterfaces, e.GetElifinstr())
+        fmt.Println(e.GetElifinstr())
+    }
+    $ifinstr = instructions.NewIf($IF.line, $IF.pos, $expr.e, $firstBlk.blk, ifInterfaces, $elsestmt.elseinstr)
+ }
+| IF expr LLAVEIZQ firstBlk=block LLAVEDER ELSE elsestmt { $ifinstr = instructions.NewIf($IF.line, $IF.pos, $expr.e, $firstBlk.blk, nil, $elsestmt.elseinstr) }
+;
+
+//* Instrucción else if
+elseifstmt returns [interfaces.Instruction elifinstr]
+: ELSE IF expr LLAVEIZQ block LLAVEDER { 
+    $elifinstr = instructions.NewIf($ELSE.line, $ELSE.pos, $expr.e, nil, $block.blk, nil)
+}
+;
+
+//* Instrucción else
+elsestmt returns [[]interface{} elseinstr]
+: LLAVEIZQ block LLAVEDER { $elseinstr = $block.blk }
 ;
 
 //* Declaracion de variables
@@ -80,6 +103,31 @@ varasgmt returns [interfaces.Instruction asgmt]
 conststmt returns [interfaces.Instruction const]
 : LET ID IG expr {$const = instructions.NewStmt($LET.line, $LET.pos, $ID.text, environment.NULL, $expr.e, true)}
 | LET ID COLON tipo IG expr {$const = instructions.NewStmt($LET.line, $LET.pos, $ID.text, $tipo.rtipo, $expr.e, true)}
+;
+
+//* Sentencia Switch-Case
+switchstmt returns [interfaces.Instruction switchinstr]
+@init{
+    var switchInterfaces = []interface{}{}
+    var interfacelist []ICasestmtContext
+}
+: SWITCH expr LLAVEIZQ casesvar+=casestmt+ defaultstmt? LLAVEDER { 
+    interfacelist = localctx.(*SwitchstmtContext).GetCasesvar()
+    for _, e := range interfacelist {
+        switchInterfaces = append(switchInterfaces, e.GetCaseinstr())
+    }
+    $switchinstr = instructions.NewSwitch($SWITCH.line, $SWITCH.pos, $expr.e, switchInterfaces, nil)
+}
+;
+
+casestmt returns [interfaces.Instruction caseinstr]
+: CASE expr COLON block BREAK? { 
+    $caseinstr = instructions.NewSwitch($CASE.line, $CASE.pos, $expr.e, $block.blk, nil) 
+}
+;
+
+defaultstmt returns [[]interface{} definstr]
+: DEFAULT COLON block BREAK? { $definstr = $block.blk }
 ;
 
 //* Gramatica para Expresiones
