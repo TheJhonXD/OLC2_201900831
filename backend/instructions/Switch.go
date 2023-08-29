@@ -23,8 +23,10 @@ func (s Switch) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 		for _, case_ := range s.Cases {
 			case_var := case_.(Switch).Expression.Ejecutar(ast, env)
 			if case_var.Value == switch_var.Value {
+				var caseEnv environment.Env
+				caseEnv = environment.NewEnv(env.(environment.Env), "SWITCH")
 				for _, instr := range case_.(Switch).Cases {
-					instr.(interfaces.Instruction).Ejecutar(ast, env)
+					instr.(interfaces.Instruction).Ejecutar(ast, caseEnv)
 				}
 				return nil
 			}

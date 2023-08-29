@@ -20,5 +20,5 @@ func (p Print) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 	valToPrint := p.Value.(interfaces.Expression).Ejecutar(ast, env)
 	consoleOut := fmt.Sprintf("%v", valToPrint.Value)
 	ast.SetPrint(consoleOut)
-	return nil
+	return valToPrint
 }

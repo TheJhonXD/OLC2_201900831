@@ -23,6 +23,7 @@ DEFAULT: 'default';
 WHILE: 'while';
 FOR: 'for';
 IN: 'in';
+RANGEPTS: '...';
 GUARD: 'guard';
 BREAK: 'break';
 CONTINUE: 'continue';

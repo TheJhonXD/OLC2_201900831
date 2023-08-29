@@ -66,6 +66,80 @@ func (env Env) SetVar(id string, value Symbol) Symbol {
 	return Symbol{Line: 0, Col: 0, Type: NULL, Value: 0}
 }
 
+func (env Env) SetConstVar(id string, value Symbol) Symbol {
+	var tmpEnv Env
+	tmpEnv = env
+	for {
+		if variable, ok := tmpEnv.SymbolTable[id]; ok {
+			if tmpEnv.SymbolTable[id].Type == value.Type {
+				tmpEnv.SymbolTable[id] = value
+				return variable
+			} else {
+				fmt.Println("Error: Los tipos no coinciden")
+				return Symbol{Line: 0, Col: 0, Type: NULL, Value: 0}
+			}
+
+		}
+		if tmpEnv.Prev == nil {
+			break
+		} else {
+			tmpEnv = tmpEnv.Prev.(Env)
+		}
+	}
+	fmt.Println("La variable \"", id, "\" no existe")
+	return Symbol{Line: 0, Col: 0, Type: NULL, Value: 0}
+}
+
+func (env Env) IsLoop() bool {
+	var tmp Env
+	tmp = env
+	for {
+		if env.Id == "FOR IN" || env.Id == "WHILE" {
+			return true
+		}
+		if tmp.Prev != nil {
+			tmp = tmp.Prev.(Env)
+		} else {
+			break
+		}
+	}
+	fmt.Println("Error: No se puede usar break o continue fuera de un ciclo")
+	return false
+}
+
+func (env Env) IsSwitch() bool {
+	var tmp Env
+	tmp = env
+	for {
+		if env.Id == "SWITCH" {
+			return true
+		}
+		if tmp.Prev != nil {
+			tmp = tmp.Prev.(Env)
+		} else {
+			break
+		}
+	}
+	fmt.Println("Error: No se puede usar break o continue fuera de un switch")
+	return false
+}
+
+func (env Env) IsFunc() bool {
+	var tmp Env
+	tmp = env
+	for {
+		if env.Id == "FUNC" {
+			return true
+		}
+		if tmp.Prev != nil {
+			tmp = tmp.Prev.(Env)
+		} else {
+			break
+		}
+	}
+	return false
+}
+
 /* func (env *Env) Search(nombre string) (SymbolVar, bool) {
 	sym, ok := env.SymbolTable[nombre]
 	if !ok && env.Prev != nil {

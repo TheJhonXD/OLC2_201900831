@@ -49,6 +49,18 @@ type SwiftGrammarListener interface {
 	// EnterDefaultstmt is called when entering the defaultstmt production.
 	EnterDefaultstmt(c *DefaultstmtContext)
 
+	// EnterWhilestmt is called when entering the whilestmt production.
+	EnterWhilestmt(c *WhilestmtContext)
+
+	// EnterForstmt is called when entering the forstmt production.
+	EnterForstmt(c *ForstmtContext)
+
+	// EnterGuardstmt is called when entering the guardstmt production.
+	EnterGuardstmt(c *GuardstmtContext)
+
+	// EnterTransferstmt is called when entering the transferstmt production.
+	EnterTransferstmt(c *TransferstmtContext)
+
 	// EnterExpr is called when entering the expr production.
 	EnterExpr(c *ExprContext)
 
@@ -93,6 +105,18 @@ type SwiftGrammarListener interface {
 
 	// ExitDefaultstmt is called when exiting the defaultstmt production.
 	ExitDefaultstmt(c *DefaultstmtContext)
+
+	// ExitWhilestmt is called when exiting the whilestmt production.
+	ExitWhilestmt(c *WhilestmtContext)
+
+	// ExitForstmt is called when exiting the forstmt production.
+	ExitForstmt(c *ForstmtContext)
+
+	// ExitGuardstmt is called when exiting the guardstmt production.
+	ExitGuardstmt(c *GuardstmtContext)
+
+	// ExitTransferstmt is called when exiting the transferstmt production.
+	ExitTransferstmt(c *TransferstmtContext)
 
 	// ExitExpr is called when exiting the expr production.
 	ExitExpr(c *ExprContext)

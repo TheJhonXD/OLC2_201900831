@@ -42,6 +42,10 @@ instruction returns [interfaces.Instruction inst]
 | varasgmt { $inst = $varasgmt.asgmt}
 | conststmt { $inst = $conststmt.const}
 | switchstmt { $inst = $switchstmt.switchinstr}
+| whilestmt { $inst = $whilestmt.whileinstr}
+| forstmt { $inst = $forstmt.forinstr}
+| guardstmt { $inst = $guardstmt.guardinstr}
+| transferstmt { $inst = $transferstmt.trns}
 ;
 
 //* Instrucción print
@@ -120,15 +124,53 @@ switchstmt returns [interfaces.Instruction switchinstr]
 }
 ;
 
+//* Instrucción case
 casestmt returns [interfaces.Instruction caseinstr]
 : CASE expr COLON block BREAK? { 
     $caseinstr = instructions.NewSwitch($CASE.line, $CASE.pos, $expr.e, $block.blk, nil) 
 }
 ;
 
+//* Instrucción default
 defaultstmt returns [[]interface{} definstr]
 : DEFAULT COLON block BREAK? { $definstr = $block.blk }
 ;
+
+//* Sentencia While
+whilestmt returns [interfaces.Instruction whileinstr]
+: WHILE expr LLAVEIZQ block LLAVEDER { $whileinstr = instructions.NewWhile($WHILE.line, $WHILE.pos, $expr.e, $block.blk) }
+;
+
+//* Sentencia For
+forstmt returns [interfaces.Instruction forinstr]
+@init{
+    var cadena interfaces.Expression
+    var str string
+}
+: FOR ID IN STRING LLAVEIZQ block LLAVEDER { 
+    str = $STRING.text
+    cadena = expressions.NewPrimitive($STRING.line, $STRING.pos, str[1:len(str)-1], environment.STRING)
+    $forinstr = instructions.NewForIn($FOR.line, $FOR.pos, $ID.text, cadena, nil, nil, $block.blk) 
+}
+| FOR ID IN left=expr RANGEPTS right=expr LLAVEIZQ block LLAVEDER { 
+    $forinstr = instructions.NewForIn($FOR.line, $FOR.pos, $ID.text, nil, $left.e, $right.e, $block.blk)
+}
+;
+
+//* Instrucción Guard
+guardstmt returns [interfaces.Instruction guardinstr]
+: GUARD expr ELSE LLAVEIZQ block LLAVEDER { $guardinstr = instructions.NewGuard($GUARD.line, $GUARD.pos, $expr.e, $block.blk) }
+;
+
+transferstmt returns [interfaces.Instruction trns]
+: BREAK { $trns = instructions.NewBreak($BREAK.line, $BREAK.pos) }
+| CONTINUE { $trns = instructions.NewContinue($CONTINUE.line, $CONTINUE.pos) }
+| RETURN { $trns = instructions.NewReturn($RETURN.line, $RETURN.pos, nil) }
+| RETURN expr { $trns = instructions.NewReturn($RETURN.line, $RETURN.pos, $expr.e) }
+;
+
+/* rangestmt 
+: expr PUNTO expr */
 
 //* Gramatica para Expresiones
 expr returns [interfaces.Expression e]

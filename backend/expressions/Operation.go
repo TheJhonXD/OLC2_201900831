@@ -72,15 +72,15 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 			dominante = sum_table[op1.Type][op2.Type]
 
 			if dominante == environment.INTEGER {
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: op1.Value.(int) + op2.Value.(int), Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: op1.Value.(int) + op2.Value.(int), Const: false}
 			} else if dominante == environment.FLOAT {
 				val1, _ := strconv.ParseFloat(fmt.Sprintf("%v", op1.Value), 64)
 				val2, _ := strconv.ParseFloat(fmt.Sprintf("%v", op2.Value), 64)
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: val1 + val2, Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: val1 + val2, Const: false}
 			} else if dominante == environment.STRING {
 				r1 := fmt.Sprintf("%v", op1.Value)
 				r2 := fmt.Sprintf("%v", op2.Value)
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: r1 + r2, Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: r1 + r2, Const: false}
 			} else {
 				ast.SetError("ERROR: No es posible sumar")
 			}
@@ -89,11 +89,11 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 		{
 			dominante = sub_mult_div_table[op1.Type][op2.Type]
 			if dominante == environment.INTEGER {
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: op1.Value.(int) - op2.Value.(int), Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: op1.Value.(int) - op2.Value.(int), Const: false}
 			} else if dominante == environment.FLOAT {
 				val1, _ := strconv.ParseFloat(fmt.Sprintf("%v", op1.Value), 64)
 				val2, _ := strconv.ParseFloat(fmt.Sprintf("%v", op2.Value), 64)
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: val1 - val2, Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: val1 - val2, Const: false}
 			} else {
 				ast.SetError("ERROR: No es posible restar")
 			}
@@ -102,11 +102,11 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 		{
 			dominante = sub_mult_div_table[op1.Type][op2.Type]
 			if dominante == environment.INTEGER {
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: op1.Value.(int) * op2.Value.(int), Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: op1.Value.(int) * op2.Value.(int), Const: false}
 			} else if dominante == environment.FLOAT {
 				val1, _ := strconv.ParseFloat(fmt.Sprintf("%v", op1.Value), 64)
 				val2, _ := strconv.ParseFloat(fmt.Sprintf("%v", op2.Value), 64)
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: val1 * val2, Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: val1 * val2, Const: false}
 			} else {
 				ast.SetError("ERROR: No es posible multiplicar")
 			}
@@ -116,7 +116,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 			dominante = sub_mult_div_table[op1.Type][op2.Type]
 			if dominante == environment.INTEGER {
 				if op2.Value.(int) != 0 {
-					return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: op1.Value.(int) / op2.Value.(int), Const: true}
+					return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: op1.Value.(int) / op2.Value.(int), Const: false}
 				} else {
 					fmt.Println("ERROR: No es posible dividir entre 0")
 				}
@@ -124,7 +124,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 				val1, _ := strconv.ParseFloat(fmt.Sprintf("%v", op1.Value), 64)
 				val2, _ := strconv.ParseFloat(fmt.Sprintf("%v", op2.Value), 64)
 				if val2 != 0 {
-					return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: val1 / val2, Const: true}
+					return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: val1 / val2, Const: false}
 				} else {
 					fmt.Println("ERROR: No es posible dividir entre 0")
 				}
@@ -137,7 +137,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 			dominante = mod_table[op1.Type][op2.Type]
 			if dominante == environment.INTEGER {
 				if op2.Value.(int) != 0 {
-					return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: op1.Value.(int) % op2.Value.(int), Const: true}
+					return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: op1.Value.(int) % op2.Value.(int), Const: false}
 				} else {
 					fmt.Println("ERROR: No es posible aplicar modulo")
 				}
@@ -161,11 +161,11 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 		{
 			dominante = table[op1.Type][op2.Type]
 			if dominante == environment.INTEGER {
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(int) < op2.Value.(int), Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(int) < op2.Value.(int), Const: false}
 			} else if dominante == environment.FLOAT {
 				val1, _ := strconv.ParseFloat(fmt.Sprintf("%v", op1.Value), 64)
 				val2, _ := strconv.ParseFloat(fmt.Sprintf("%v", op2.Value), 64)
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: val1 < val2, Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: val1 < val2, Const: false}
 			} else {
 				ast.SetError("ERROR: No es posible comparar")
 			}
@@ -174,11 +174,11 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 		{
 			dominante = table[op1.Type][op2.Type]
 			if dominante == environment.INTEGER {
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(int) > op2.Value.(int), Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(int) > op2.Value.(int), Const: false}
 			} else if dominante == environment.FLOAT {
 				val1, _ := strconv.ParseFloat(fmt.Sprintf("%v", op1.Value), 64)
 				val2, _ := strconv.ParseFloat(fmt.Sprintf("%v", op2.Value), 64)
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: val1 > val2, Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: val1 > val2, Const: false}
 			} else {
 				ast.SetError("ERROR: No es posible comparar")
 			}
@@ -187,11 +187,11 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 		{
 			dominante = table[op1.Type][op2.Type]
 			if dominante == environment.INTEGER {
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(int) <= op2.Value.(int), Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(int) <= op2.Value.(int), Const: false}
 			} else if dominante == environment.FLOAT {
 				val1, _ := strconv.ParseFloat(fmt.Sprintf("%v", op1.Value), 64)
 				val2, _ := strconv.ParseFloat(fmt.Sprintf("%v", op2.Value), 64)
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: val1 <= val2, Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: val1 <= val2, Const: false}
 			} else {
 				ast.SetError("ERROR: No es posible comparar")
 			}
