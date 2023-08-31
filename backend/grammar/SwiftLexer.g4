@@ -32,6 +32,11 @@ STRUCT: 'struct';
 SELF: 'self';
 MUTATING: 'mutating';
 FUNC: 'func';
+APPEND: 'append';
+REMOVELAST: 'removeLast';
+REMOVE: 'remove';
+EMPTY: 'isEmpty';
+COUNT: 'count';
 
 // primitives
 NUMBER : [0-9]+ ('.'[0-9]+)?;
@@ -60,6 +65,8 @@ PARIZQ:         '(';
 PARDER:         ')';
 LLAVEIZQ:       '{';
 LLAVEDER:       '}';
+CORCHIZQ:       '[';
+CORCHDER:       ']';
 Q_MARK:         '?';
 ARROW:         '->';
 COMA:           ',';

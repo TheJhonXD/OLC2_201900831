@@ -46,6 +46,9 @@ instruction returns [interfaces.Instruction inst]
 | forstmt { $inst = $forstmt.forinstr}
 | guardstmt { $inst = $guardstmt.guardinstr}
 | transferstmt { $inst = $transferstmt.trns}
+| vectorstmt { $inst = $vectorstmt.vectorinstr}
+| methodvec { $inst = $methodvec.methodinstr}
+| vecaccess { $inst = $vecaccess.vecacc}
 ;
 
 //* Instrucción print
@@ -162,6 +165,8 @@ guardstmt returns [interfaces.Instruction guardinstr]
 : GUARD expr ELSE LLAVEIZQ block LLAVEDER { $guardinstr = instructions.NewGuard($GUARD.line, $GUARD.pos, $expr.e, $block.blk) }
 ;
 
+
+//* Sentencias de transferencia
 transferstmt returns [interfaces.Instruction trns]
 : BREAK { $trns = instructions.NewBreak($BREAK.line, $BREAK.pos) }
 | CONTINUE { $trns = instructions.NewContinue($CONTINUE.line, $CONTINUE.pos) }
@@ -169,8 +174,67 @@ transferstmt returns [interfaces.Instruction trns]
 | RETURN expr { $trns = instructions.NewReturn($RETURN.line, $RETURN.pos, $expr.e) }
 ;
 
-/* rangestmt 
-: expr PUNTO expr */
+//* Declaración de vectores
+vectorstmt returns [interfaces.Instruction vectorinstr]
+: VAR ID COLON CORCHIZQ tipo CORCHDER definestmt { 
+    $vectorinstr = instructions.NewVectorStmt($VAR.line, $VAR.pos, $ID.text, $tipo.rtipo, $definestmt.defineinstr)
+}
+;
+
+//* Definicion de valor de un vector
+definestmt returns [[]interface{} defineinstr]
+@init{
+    var defVecInterfaces []interface{}
+}
+: IG CORCHIZQ lista += listexpr+ CORCHDER{ 
+    for _, e := range localctx.(*DefinestmtContext).GetLista() {
+        // fmt.Println(fmt.Sprintf("%T", e.GetListe()))
+        defVecInterfaces = append(defVecInterfaces, e.GetListe())
+    }
+    $defineinstr = defVecInterfaces
+}
+;
+
+//* Lista de expresiones
+listexpr returns [interfaces.Expression liste]
+: expr COMA { $liste = $expr.e }
+| expr { $liste = $expr.e }
+;
+
+//* Metodos de vectores
+methodvec returns [interfaces.Instruction methodinstr]
+: ID PUNTO APPEND PARIZQ expr PARDER { $methodinstr = instructions.NewVectorMethod($ID.line, $ID.pos, $ID.text, $expr.e, $APPEND.text) }
+| ID PUNTO REMOVELAST PARIZQ PARDER { $methodinstr = instructions.NewVectorMethod($ID.line, $ID.pos, $ID.text, nil, $REMOVELAST.text) }
+| ID PUNTO REMOVE PARIZQ expr PARDER { $methodinstr = instructions.NewVectorMethod($ID.line, $ID.pos, $ID.text, $expr.e, $REMOVE.text) }
+;
+
+//* Metodos de vectores que retornan un valor
+methodvecrtrn returns [interfaces.Expression methodinstrtrn]
+: ID PUNTO EMPTY { $methodinstrtrn = expressions.NewVector($ID.line, $ID.pos, $ID.text, nil, $EMPTY.text) }
+| ID PUNTO COUNT { $methodinstrtrn = expressions.NewVector($ID.line, $ID.pos, $ID.text, nil, $COUNT.text) }
+| ID CORCHIZQ expr CORCHDER { $methodinstrtrn = expressions.NewVector($ID.line, $ID.pos, $ID.text, $expr.e, "access") }
+;
+
+//* Acceso a vectores
+vecaccess returns [interfaces.Instruction vecacc]
+: firstId=ID CORCHIZQ first=expr CORCHDER IG secondId=ID CORCHIZQ second=expr CORCHDER { 
+    $vecacc = instructions.NewVectorAsgmt($firstId.line, $firstId.pos, $firstId.text, $first.e, $second.e, $secondId.text) 
+}
+;
+
+
+/* @init{
+    $blk = []interface{}{}
+    var listInt []IInstructionContext
+  }
+: ins+=instruction+
+    {
+        listInt = localctx.(*BlockContext).GetIns()
+        for _, e := range listInt {
+            $blk = append($blk, e.GetInst())
+        }
+    }
+; */
 
 //* Gramatica para Expresiones
 expr returns [interfaces.Expression e]
@@ -212,6 +276,7 @@ expr returns [interfaces.Expression e]
 | TRU { $e = expressions.NewPrimitive($TRU.line, $TRU.pos, true, environment.BOOLEAN) }
 | FAL { $e = expressions.NewPrimitive($FAL.line, $FAL.pos, false, environment.BOOLEAN) }
 | ID { $e = expressions.NewVar($ID.line, $ID.pos, $ID.text) }
+| methodvecrtrn { $e = $methodvecrtrn.methodinstrtrn }
 ;
 
 /* primitive [interfaces.Expression p]  

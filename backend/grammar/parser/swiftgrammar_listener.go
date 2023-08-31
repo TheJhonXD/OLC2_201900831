@@ -61,6 +61,24 @@ type SwiftGrammarListener interface {
 	// EnterTransferstmt is called when entering the transferstmt production.
 	EnterTransferstmt(c *TransferstmtContext)
 
+	// EnterVectorstmt is called when entering the vectorstmt production.
+	EnterVectorstmt(c *VectorstmtContext)
+
+	// EnterDefinestmt is called when entering the definestmt production.
+	EnterDefinestmt(c *DefinestmtContext)
+
+	// EnterListexpr is called when entering the listexpr production.
+	EnterListexpr(c *ListexprContext)
+
+	// EnterMethodvec is called when entering the methodvec production.
+	EnterMethodvec(c *MethodvecContext)
+
+	// EnterMethodvecrtrn is called when entering the methodvecrtrn production.
+	EnterMethodvecrtrn(c *MethodvecrtrnContext)
+
+	// EnterVecaccess is called when entering the vecaccess production.
+	EnterVecaccess(c *VecaccessContext)
+
 	// EnterExpr is called when entering the expr production.
 	EnterExpr(c *ExprContext)
 
@@ -117,6 +135,24 @@ type SwiftGrammarListener interface {
 
 	// ExitTransferstmt is called when exiting the transferstmt production.
 	ExitTransferstmt(c *TransferstmtContext)
+
+	// ExitVectorstmt is called when exiting the vectorstmt production.
+	ExitVectorstmt(c *VectorstmtContext)
+
+	// ExitDefinestmt is called when exiting the definestmt production.
+	ExitDefinestmt(c *DefinestmtContext)
+
+	// ExitListexpr is called when exiting the listexpr production.
+	ExitListexpr(c *ListexprContext)
+
+	// ExitMethodvec is called when exiting the methodvec production.
+	ExitMethodvec(c *MethodvecContext)
+
+	// ExitMethodvecrtrn is called when exiting the methodvecrtrn production.
+	ExitMethodvecrtrn(c *MethodvecrtrnContext)
+
+	// ExitVecaccess is called when exiting the vecaccess production.
+	ExitVecaccess(c *VecaccessContext)
 
 	// ExitExpr is called when exiting the expr production.
 	ExitExpr(c *ExprContext)

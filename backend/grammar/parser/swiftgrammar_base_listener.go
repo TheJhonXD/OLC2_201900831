@@ -128,6 +128,42 @@ func (s *BaseSwiftGrammarListener) EnterTransferstmt(ctx *TransferstmtContext) {
 // ExitTransferstmt is called when production transferstmt is exited.
 func (s *BaseSwiftGrammarListener) ExitTransferstmt(ctx *TransferstmtContext) {}
 
+// EnterVectorstmt is called when production vectorstmt is entered.
+func (s *BaseSwiftGrammarListener) EnterVectorstmt(ctx *VectorstmtContext) {}
+
+// ExitVectorstmt is called when production vectorstmt is exited.
+func (s *BaseSwiftGrammarListener) ExitVectorstmt(ctx *VectorstmtContext) {}
+
+// EnterDefinestmt is called when production definestmt is entered.
+func (s *BaseSwiftGrammarListener) EnterDefinestmt(ctx *DefinestmtContext) {}
+
+// ExitDefinestmt is called when production definestmt is exited.
+func (s *BaseSwiftGrammarListener) ExitDefinestmt(ctx *DefinestmtContext) {}
+
+// EnterListexpr is called when production listexpr is entered.
+func (s *BaseSwiftGrammarListener) EnterListexpr(ctx *ListexprContext) {}
+
+// ExitListexpr is called when production listexpr is exited.
+func (s *BaseSwiftGrammarListener) ExitListexpr(ctx *ListexprContext) {}
+
+// EnterMethodvec is called when production methodvec is entered.
+func (s *BaseSwiftGrammarListener) EnterMethodvec(ctx *MethodvecContext) {}
+
+// ExitMethodvec is called when production methodvec is exited.
+func (s *BaseSwiftGrammarListener) ExitMethodvec(ctx *MethodvecContext) {}
+
+// EnterMethodvecrtrn is called when production methodvecrtrn is entered.
+func (s *BaseSwiftGrammarListener) EnterMethodvecrtrn(ctx *MethodvecrtrnContext) {}
+
+// ExitMethodvecrtrn is called when production methodvecrtrn is exited.
+func (s *BaseSwiftGrammarListener) ExitMethodvecrtrn(ctx *MethodvecrtrnContext) {}
+
+// EnterVecaccess is called when production vecaccess is entered.
+func (s *BaseSwiftGrammarListener) EnterVecaccess(ctx *VecaccessContext) {}
+
+// ExitVecaccess is called when production vecaccess is exited.
+func (s *BaseSwiftGrammarListener) ExitVecaccess(ctx *VecaccessContext) {}
+
 // EnterExpr is called when production expr is entered.
 func (s *BaseSwiftGrammarListener) EnterExpr(ctx *ExprContext) {}
 
