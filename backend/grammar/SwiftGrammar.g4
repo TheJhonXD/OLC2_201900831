@@ -37,6 +37,7 @@ block returns [[]interface{} blk]
 
 instruction returns [interfaces.Instruction inst]
 : printstmt { $inst = $printstmt.prnt}
+| callfuncinstruction { $inst = $callfuncinstruction.callfuncinstr}
 | ifstmt { $inst = $ifstmt.ifinstr }
 | varstmt { $inst = $varstmt.var}
 | varasgmt { $inst = $varasgmt.asgmt}
@@ -49,11 +50,25 @@ instruction returns [interfaces.Instruction inst]
 | vectorstmt { $inst = $vectorstmt.vectorinstr}
 | methodvec { $inst = $methodvec.methodinstr}
 | vecaccess { $inst = $vecaccess.vecacc}
+| funcstmt { $inst = $funcstmt.funcinstr}
 ;
 
 //* Instrucción print
 printstmt returns [interfaces.Instruction prnt]
-: PRINT PARIZQ expr PARDER { $prnt = instructions.NewPrint($PRINT.line,$PRINT.pos,$expr.e)}
+@init{
+    var listExpr []interface{}
+}
+: PRINT PARIZQ lista+=printexprlist+ PARDER { 
+    for _, e := range localctx.(*PrintstmtContext).GetLista() {
+        listExpr = append(listExpr, e.GetPrntexpr())
+    }
+    $prnt = instructions.NewPrint($PRINT.line, $PRINT.pos, listExpr)
+}
+;
+
+printexprlist returns [interfaces.Expression prntexpr]
+: expr COMA { $prntexpr = $expr.e }
+| expr { $prntexpr = $expr.e }
 ;
 
 //* Sentencia if else
@@ -153,10 +168,13 @@ forstmt returns [interfaces.Instruction forinstr]
 : FOR ID IN STRING LLAVEIZQ block LLAVEDER { 
     str = $STRING.text
     cadena = expressions.NewPrimitive($STRING.line, $STRING.pos, str[1:len(str)-1], environment.STRING)
-    $forinstr = instructions.NewForIn($FOR.line, $FOR.pos, $ID.text, cadena, nil, nil, $block.blk) 
+    $forinstr = instructions.NewForIn($FOR.line, $FOR.pos, $ID.text, cadena, nil, nil, "", $block.blk) 
 }
 | FOR ID IN left=expr RANGEPTS right=expr LLAVEIZQ block LLAVEDER { 
-    $forinstr = instructions.NewForIn($FOR.line, $FOR.pos, $ID.text, nil, $left.e, $right.e, $block.blk)
+    $forinstr = instructions.NewForIn($FOR.line, $FOR.pos, $ID.text, nil, $left.e, $right.e, "", $block.blk)
+}
+| FOR first=ID IN second=ID LLAVEIZQ block LLAVEDER {
+    $forinstr = instructions.NewForIn($FOR.line, $FOR.pos, $first.text, nil, nil, nil, $second.text, $block.blk)
 }
 ;
 
@@ -193,6 +211,7 @@ definestmt returns [[]interface{} defineinstr]
     }
     $defineinstr = defVecInterfaces
 }
+| IG CORCHIZQ CORCHDER { $defineinstr = nil }
 ;
 
 //* Lista de expresiones
@@ -220,21 +239,115 @@ vecaccess returns [interfaces.Instruction vecacc]
 : firstId=ID CORCHIZQ first=expr CORCHDER IG secondId=ID CORCHIZQ second=expr CORCHDER { 
     $vecacc = instructions.NewVectorAsgmt($firstId.line, $firstId.pos, $firstId.text, $first.e, $second.e, $secondId.text) 
 }
+| ID CORCHIZQ first=expr CORCHDER IG second=expr { $vecacc = instructions.NewVectorAsgmt($ID.line, $ID.pos, $ID.text, $first.e, $second.e, "") }
 ;
 
 
-/* @init{
-    $blk = []interface{}{}
-    var listInt []IInstructionContext
-  }
-: ins+=instruction+
-    {
-        listInt = localctx.(*BlockContext).GetIns()
-        for _, e := range listInt {
-            $blk = append($blk, e.GetInst())
-        }
+//* Funciones
+funcstmt returns [interfaces.Instruction funcinstr]
+@init{
+    var args []interface{}
+}
+: FUNC ID PARIZQ lista+=listparam+ PARDER ARROW tipo LLAVEIZQ block LLAVEDER {
+    for _, e := range localctx.(*FuncstmtContext).GetLista() {
+        // fmt.Println(fmt.Sprintf("%T", e.GetListparaminstr()))
+        args = append(args, e.GetListparaminstr())
     }
-; */
+    $funcinstr = instructions.NewFunction($FUNC.line, $FUNC.pos, $ID.text, args, $tipo.rtipo, $block.blk)
+}
+| FUNC ID PARIZQ lista+=listparam+ PARDER LLAVEIZQ block LLAVEDER {
+    for _, e := range localctx.(*FuncstmtContext).GetLista() {
+        // fmt.Println(fmt.Sprintf("%T", e.GetListparaminstr()))
+        args = append(args, e.GetListparaminstr())
+    }
+    $funcinstr = instructions.NewFunction($FUNC.line, $FUNC.pos, $ID.text, args, 4, $block.blk)
+}
+| FUNC ID PARIZQ PARDER ARROW tipo LLAVEIZQ block LLAVEDER { 
+    $funcinstr = instructions.NewFunction($FUNC.line, $FUNC.pos, $ID.text, nil, $tipo.rtipo, $block.blk) 
+}
+| FUNC ID PARIZQ PARDER LLAVEIZQ block LLAVEDER { 
+    $funcinstr = instructions.NewFunction($FUNC.line, $FUNC.pos, $ID.text, nil, 4, $block.blk) 
+}
+;
+
+//* Lista de parametros
+listparam returns [interfaces.Instruction listparaminstr]
+: extr=(ID | CAME )? inter=ID COLON INOUT? tipo COMA { 
+    var flag bool
+    var aux string
+    if $INOUT != nil {
+        flag = true
+    }
+    if $extr != nil {
+        aux = $extr.text
+    }
+    $listparaminstr = instructions.NewParam($extr.line, $extr.pos, aux, $inter.text, flag, $tipo.rtipo) 
+}
+| extr=(ID | CAME )? inter=ID COLON INOUT? tipo { 
+    var flag bool
+    var aux string
+    if $INOUT != nil {
+        flag = true
+    }
+    if $extr != nil {
+        aux = $extr.text
+    }
+    $listparaminstr = instructions.NewParam($extr.line, $extr.pos, aux, $inter.text, flag, $tipo.rtipo) 
+}
+;
+
+//TODO: Hacer lo mismo que en funcstmt
+
+callfunc returns [interfaces.Expression callfuncexpr]
+@init{
+    var args []interface{}
+}
+: ID PARIZQ lista+=listparamcall+ PARDER {
+    for _, e := range localctx.(*CallfuncContext).GetLista() {
+        // fmt.Println(fmt.Sprintf("%T", e.GetListparamcallinstr()))
+        args = append(args, e.GetListparamcallinstr())
+    }
+    $callfuncexpr = expressions.NewCallFunc($ID.line, $ID.pos, $ID.text, args)
+}
+| ID PARIZQ PARDER { $callfuncexpr = expressions.NewCallFunc($ID.line, $ID.pos, $ID.text, nil) }
+;
+
+callfuncinstruction returns [interfaces.Instruction callfuncinstr]
+@init{
+    var args []interface{}
+}
+: ID PARIZQ lista+=listparamcall+ PARDER {
+    for _, e := range localctx.(*CallfuncinstructionContext).GetLista() {
+        // fmt.Println(fmt.Sprintf("%T", e.GetListparamcallinstr()))
+        args = append(args, e.GetListparamcallinstr())
+    }
+    $callfuncinstr = instructions.NewCallFunc($ID.line, $ID.pos, $ID.text, args)
+}
+| ID PARIZQ PARDER { $callfuncinstr = instructions.NewCallFunc($ID.line, $ID.pos, $ID.text, nil) }
+;
+
+listparamcall returns [interfaces.Expression listparamcallinstr]
+: (ID COLON)? AMP? expr COMA { 
+    var flag bool
+    if $AMP != nil {
+        flag = true
+    }
+    $listparamcallinstr = expressions.NewCallParams($expr.start.GetLine(), $expr.start.GetColumn(), $ID.text, flag, $expr.e) 
+}
+| (ID COLON)? AMP? expr { 
+    var flag bool
+    if $AMP != nil {
+        flag = true
+    }
+    $listparamcallinstr = expressions.NewCallParams($expr.start.GetLine(), $expr.start.GetColumn(), $ID.text, flag, $expr.e)
+ }
+;
+
+funcembed returns [interfaces.Expression funcembedexpr]
+: STR PARIZQ expr PARDER { $funcembedexpr = expressions.NewString($STR.line, $STR.pos, $expr.e) }
+| INT PARIZQ expr PARDER { $funcembedexpr = expressions.NewInteger($INT.line, $INT.pos, $expr.e) }
+| FLOAT PARIZQ expr PARDER { $funcembedexpr = expressions.NewFloat($FLOAT.line, $FLOAT.pos, $expr.e) }
+;
 
 //* Gramatica para Expresiones
 expr returns [interfaces.Expression e]
@@ -274,6 +387,8 @@ expr returns [interfaces.Expression e]
         $e = expressions.NewPrimitive($STRING.line, $STRING.pos, str[1:len(str)-1],environment.STRING)
     }                        
 | TRU { $e = expressions.NewPrimitive($TRU.line, $TRU.pos, true, environment.BOOLEAN) }
+| callfunc { $e = $callfunc.callfuncexpr }
+| funcembed { $e = $funcembed.funcembedexpr }
 | FAL { $e = expressions.NewPrimitive($FAL.line, $FAL.pos, false, environment.BOOLEAN) }
 | ID { $e = expressions.NewVar($ID.line, $ID.pos, $ID.text) }
 | methodvecrtrn { $e = $methodvecrtrn.methodinstrtrn }

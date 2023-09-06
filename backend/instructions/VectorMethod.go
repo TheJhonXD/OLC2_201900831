@@ -24,10 +24,12 @@ func (v VectorMethod) Ejecutar(ast *environment.AST, env interface{}) interface{
 	}
 	if v.Method == "append" {
 		var valuesAux []interface{}
-		for _, val := range result.Value.([]interface{}) {
-			valuesAux = append(valuesAux, val)
+		if len(result.Value.([]interface{})) > 0 {
+			for _, val := range result.Value.([]interface{}) {
+				valuesAux = append(valuesAux, val)
+			}
 		}
-		valuesAux = append(valuesAux, v.Expression.Ejecutar(ast, env))
+		valuesAux = append(valuesAux, v.Expression.Ejecutar(ast, env).Value)
 		result.Value = valuesAux
 		//Actualizo la variable
 		env.(environment.Env).SetVar(v.Id, result)
@@ -49,11 +51,13 @@ func (v VectorMethod) Ejecutar(ast *environment.AST, env interface{}) interface{
 			var valuesAux []interface{}
 			pos := v.Expression.Ejecutar(ast, env).Value.(int)
 			if len(result.Value.([]interface{})) > pos {
-				for _, val := range result.Value.([]interface{}) {
-					valuesAux = append(valuesAux, val)
+				for i, val := range result.Value.([]interface{}) {
+					if i != pos {
+						valuesAux = append(valuesAux, val)
+					}
 				}
-				newSlice := append(valuesAux[:pos], valuesAux[pos+1:])
-				result.Value = newSlice
+
+				result.Value = valuesAux
 				//Actualizo la variable
 				env.(environment.Env).SetVar(v.Id, result)
 			} else {

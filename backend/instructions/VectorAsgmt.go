@@ -31,8 +31,31 @@ func (v VectorAsgmt) Ejecutar(ast *environment.AST, env interface{}) interface{}
 				varAux := expressions.NewVector(v.Line, v.Col, v.Id2ndVector, v.Expression, "access")
 				result2 := varAux.Ejecutar(ast, env)
 				if result2.Type != environment.NULL {
-					result.Value.([]interface{})[pos.Value.(int)] = result2.Value
-					env.(environment.Env).SetVar(v.Id, result)
+					if result2.Type == result.Type {
+						result.Value.([]interface{})[pos.Value.(int)] = result2.Value
+						env.(environment.Env).SetVar(v.Id, result)
+					} else {
+						ast.SetError("Error Semantico: El tipo de dato \"" + v.Id2ndVector + "\" no coincide con el tipo de dato del vector \"" + v.Id + "\"")
+					}
+				}
+			} else {
+				ast.SetError("Error Semantico: El indice \"" + v.Id + "\" esta fuera de rango")
+			}
+		} else {
+			ast.SetError("Error Semantico: El indice \"" + v.Id + "\" debe ser de tipo INTEGER")
+		}
+	} else {
+		pos := v.Position.Ejecutar(ast, env)
+		if pos.Type == environment.INTEGER {
+			if len(result.Value.([]interface{})) > pos.Value.(int) {
+				result2 := v.Expression.Ejecutar(ast, env)
+				if result2.Type != environment.NULL {
+					if result2.Type == result.Type {
+						result.Value.([]interface{})[pos.Value.(int)] = result2.Value
+						env.(environment.Env).SetVar(v.Id, result)
+					} else {
+						ast.SetError("Error Semantico: El tipo de dato \"" + v.Id2ndVector + "\" no coincide con el tipo de dato del vector \"" + v.Id + "\"")
+					}
 				}
 			} else {
 				ast.SetError("Error Semantico: El indice \"" + v.Id + "\" esta fuera de rango")

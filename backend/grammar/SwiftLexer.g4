@@ -37,6 +37,8 @@ REMOVELAST: 'removeLast';
 REMOVE: 'remove';
 EMPTY: 'isEmpty';
 COUNT: 'count';
+INOUT: 'inout';
+CAME: '_';
 
 // primitives
 NUMBER : [0-9]+ ('.'[0-9]+)?;
@@ -72,6 +74,7 @@ ARROW:         '->';
 COMA:           ',';
 PUNTO:          '.';
 COLON:      ':';
+AMP:            '&';
 
 // skip
 WHITESPACE: [ \\\r\n\t]+ -> skip;

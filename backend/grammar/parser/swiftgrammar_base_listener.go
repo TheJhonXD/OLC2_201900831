@@ -1,4 +1,4 @@
-// Code generated from SwiftGrammar.g4 by ANTLR 4.13.0. DO NOT EDIT.
+// Code generated from SwiftGrammar.g4 by ANTLR 4.13.1. DO NOT EDIT.
 
 package parser // SwiftGrammar
 import "github.com/antlr4-go/antlr/v4"
@@ -43,6 +43,12 @@ func (s *BaseSwiftGrammarListener) EnterPrintstmt(ctx *PrintstmtContext) {}
 
 // ExitPrintstmt is called when production printstmt is exited.
 func (s *BaseSwiftGrammarListener) ExitPrintstmt(ctx *PrintstmtContext) {}
+
+// EnterPrintexprlist is called when production printexprlist is entered.
+func (s *BaseSwiftGrammarListener) EnterPrintexprlist(ctx *PrintexprlistContext) {}
+
+// ExitPrintexprlist is called when production printexprlist is exited.
+func (s *BaseSwiftGrammarListener) ExitPrintexprlist(ctx *PrintexprlistContext) {}
 
 // EnterIfstmt is called when production ifstmt is entered.
 func (s *BaseSwiftGrammarListener) EnterIfstmt(ctx *IfstmtContext) {}
@@ -163,6 +169,42 @@ func (s *BaseSwiftGrammarListener) EnterVecaccess(ctx *VecaccessContext) {}
 
 // ExitVecaccess is called when production vecaccess is exited.
 func (s *BaseSwiftGrammarListener) ExitVecaccess(ctx *VecaccessContext) {}
+
+// EnterFuncstmt is called when production funcstmt is entered.
+func (s *BaseSwiftGrammarListener) EnterFuncstmt(ctx *FuncstmtContext) {}
+
+// ExitFuncstmt is called when production funcstmt is exited.
+func (s *BaseSwiftGrammarListener) ExitFuncstmt(ctx *FuncstmtContext) {}
+
+// EnterListparam is called when production listparam is entered.
+func (s *BaseSwiftGrammarListener) EnterListparam(ctx *ListparamContext) {}
+
+// ExitListparam is called when production listparam is exited.
+func (s *BaseSwiftGrammarListener) ExitListparam(ctx *ListparamContext) {}
+
+// EnterCallfunc is called when production callfunc is entered.
+func (s *BaseSwiftGrammarListener) EnterCallfunc(ctx *CallfuncContext) {}
+
+// ExitCallfunc is called when production callfunc is exited.
+func (s *BaseSwiftGrammarListener) ExitCallfunc(ctx *CallfuncContext) {}
+
+// EnterCallfuncinstruction is called when production callfuncinstruction is entered.
+func (s *BaseSwiftGrammarListener) EnterCallfuncinstruction(ctx *CallfuncinstructionContext) {}
+
+// ExitCallfuncinstruction is called when production callfuncinstruction is exited.
+func (s *BaseSwiftGrammarListener) ExitCallfuncinstruction(ctx *CallfuncinstructionContext) {}
+
+// EnterListparamcall is called when production listparamcall is entered.
+func (s *BaseSwiftGrammarListener) EnterListparamcall(ctx *ListparamcallContext) {}
+
+// ExitListparamcall is called when production listparamcall is exited.
+func (s *BaseSwiftGrammarListener) ExitListparamcall(ctx *ListparamcallContext) {}
+
+// EnterFuncembed is called when production funcembed is entered.
+func (s *BaseSwiftGrammarListener) EnterFuncembed(ctx *FuncembedContext) {}
+
+// ExitFuncembed is called when production funcembed is exited.
+func (s *BaseSwiftGrammarListener) ExitFuncembed(ctx *FuncembedContext) {}
 
 // EnterExpr is called when production expr is entered.
 func (s *BaseSwiftGrammarListener) EnterExpr(ctx *ExprContext) {}

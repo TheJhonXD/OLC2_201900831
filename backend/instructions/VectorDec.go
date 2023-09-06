@@ -3,7 +3,6 @@ package instructions
 import (
 	"Server/environment"
 	"Server/interfaces"
-	"fmt"
 )
 
 type VectorDec struct {
@@ -23,7 +22,6 @@ func (v VectorDec) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 	var values []interface{}
 	mismatchFlag := false
 	if v.ExpList != nil {
-		fmt.Println("VectorDec")
 		for _, exp := range v.ExpList {
 			result = exp.(interfaces.Expression).Ejecutar(ast, env)
 			if result.Type != v.Type {
@@ -46,6 +44,15 @@ func (v VectorDec) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 			ast.SetError("Error Semantico: Los valores del vector no coinciden con el tipo del vector")
 		}
 
+	} else {
+		result = environment.Symbol{Line: v.Line, Col: v.Col, Type: v.Type, Value: values, Const: false}
+		resultEnv := env.(environment.Env).GetVar(v.Id)
+		if resultEnv.Type == environment.NULL {
+			values = append(values, nil)
+			env.(environment.Env).SaveVar(v.Id, result)
+		} else {
+			ast.SetError("Error Semantico: El vector \"" + v.Id + "\" ya existe")
+		}
 	}
 	return result
 }

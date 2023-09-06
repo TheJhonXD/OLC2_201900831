@@ -1,4 +1,4 @@
-// Code generated from SwiftGrammar.g4 by ANTLR 4.13.0. DO NOT EDIT.
+// Code generated from SwiftGrammar.g4 by ANTLR 4.13.1. DO NOT EDIT.
 
 package parser // SwiftGrammar
 import "github.com/antlr4-go/antlr/v4"
@@ -18,6 +18,9 @@ type SwiftGrammarListener interface {
 
 	// EnterPrintstmt is called when entering the printstmt production.
 	EnterPrintstmt(c *PrintstmtContext)
+
+	// EnterPrintexprlist is called when entering the printexprlist production.
+	EnterPrintexprlist(c *PrintexprlistContext)
 
 	// EnterIfstmt is called when entering the ifstmt production.
 	EnterIfstmt(c *IfstmtContext)
@@ -79,6 +82,24 @@ type SwiftGrammarListener interface {
 	// EnterVecaccess is called when entering the vecaccess production.
 	EnterVecaccess(c *VecaccessContext)
 
+	// EnterFuncstmt is called when entering the funcstmt production.
+	EnterFuncstmt(c *FuncstmtContext)
+
+	// EnterListparam is called when entering the listparam production.
+	EnterListparam(c *ListparamContext)
+
+	// EnterCallfunc is called when entering the callfunc production.
+	EnterCallfunc(c *CallfuncContext)
+
+	// EnterCallfuncinstruction is called when entering the callfuncinstruction production.
+	EnterCallfuncinstruction(c *CallfuncinstructionContext)
+
+	// EnterListparamcall is called when entering the listparamcall production.
+	EnterListparamcall(c *ListparamcallContext)
+
+	// EnterFuncembed is called when entering the funcembed production.
+	EnterFuncembed(c *FuncembedContext)
+
 	// EnterExpr is called when entering the expr production.
 	EnterExpr(c *ExprContext)
 
@@ -93,6 +114,9 @@ type SwiftGrammarListener interface {
 
 	// ExitPrintstmt is called when exiting the printstmt production.
 	ExitPrintstmt(c *PrintstmtContext)
+
+	// ExitPrintexprlist is called when exiting the printexprlist production.
+	ExitPrintexprlist(c *PrintexprlistContext)
 
 	// ExitIfstmt is called when exiting the ifstmt production.
 	ExitIfstmt(c *IfstmtContext)
@@ -153,6 +177,24 @@ type SwiftGrammarListener interface {
 
 	// ExitVecaccess is called when exiting the vecaccess production.
 	ExitVecaccess(c *VecaccessContext)
+
+	// ExitFuncstmt is called when exiting the funcstmt production.
+	ExitFuncstmt(c *FuncstmtContext)
+
+	// ExitListparam is called when exiting the listparam production.
+	ExitListparam(c *ListparamContext)
+
+	// ExitCallfunc is called when exiting the callfunc production.
+	ExitCallfunc(c *CallfuncContext)
+
+	// ExitCallfuncinstruction is called when exiting the callfuncinstruction production.
+	ExitCallfuncinstruction(c *CallfuncinstructionContext)
+
+	// ExitListparamcall is called when exiting the listparamcall production.
+	ExitListparamcall(c *ListparamcallContext)
+
+	// ExitFuncembed is called when exiting the funcembed production.
+	ExitFuncembed(c *FuncembedContext)
 
 	// ExitExpr is called when exiting the expr production.
 	ExitExpr(c *ExprContext)

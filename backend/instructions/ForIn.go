@@ -12,11 +12,12 @@ type ForIn struct {
 	Expression interfaces.Expression
 	Op_left    interfaces.Expression
 	Op_right   interfaces.Expression
+	VecId      string
 	Block      []interface{}
 }
 
-func NewForIn(line int, col int, ide string, expression interfaces.Expression, left interfaces.Expression, right interfaces.Expression, block []interface{}) ForIn {
-	return ForIn{line, col, ide, expression, left, right, block}
+func NewForIn(line int, col int, ide string, expression interfaces.Expression, left interfaces.Expression, right interfaces.Expression, vecId string, block []interface{}) ForIn {
+	return ForIn{line, col, ide, expression, left, right, vecId, block}
 }
 
 func (f ForIn) Ejecutar(ast *environment.AST, env interface{}) interface{} {
@@ -43,7 +44,7 @@ func (f ForIn) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 		} else {
 			//Todo: la variable no es un string
 		}
-	} else {
+	} else if f.Op_left != nil && f.Op_right != nil {
 		var left, right environment.Symbol
 		left = f.Op_left.Ejecutar(ast, env)
 		right = f.Op_right.Ejecutar(ast, env)
@@ -53,10 +54,9 @@ func (f ForIn) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 			var_exists := env.(environment.Env).GetVar(f.Id)
 			if var_exists.Type == environment.NULL {
 				var newSymbol environment.Symbol
-				newSymbol = environment.Symbol{Line: f.Line + 3, Col: f.Col + 3, Type: environment.CHAR, Value: 0, Const: true}
+				newSymbol = environment.Symbol{Line: f.Line + 3, Col: f.Col + 3, Type: environment.INTEGER, Value: 0, Const: true}
 				forEnv.SaveVar(f.Id, newSymbol)
 				if left.Value.(int) < right.Value.(int) {
-					//! El for cambia
 					for var_i := left.Value.(int); var_i <= right.Value.(int); var_i++ {
 						newSymbol.Value = var_i
 						forEnv.SetConstVar(f.Id, newSymbol)
@@ -69,6 +69,25 @@ func (f ForIn) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 
 		} else {
 			//Todo: error de tipos
+		}
+	} else if f.VecId != "" {
+		var forEnv environment.Env
+		forEnv = environment.NewEnv(env.(environment.Env), "FOR IN")
+		var_exist := env.(environment.Env).GetVar(f.Id)
+		if var_exist.Type == environment.NULL {
+			var newSymbol environment.Symbol
+			newSymbol = environment.Symbol{Line: f.Line + 3, Col: f.Col + 3, Type: environment.CHAR, Value: 0, Const: true}
+			forEnv.SaveVar(f.Id, newSymbol)
+			listVec := env.(environment.Env).GetVar(f.VecId)
+			if listVec.Type != environment.NULL {
+				for _, val := range listVec.Value.([]interface{}) {
+					newSymbol.Value = val
+					forEnv.SetConstVar(f.Id, newSymbol)
+					for _, inst := range f.Block {
+						inst.(interfaces.Instruction).Ejecutar(ast, forEnv)
+					}
+				}
+			}
 		}
 	}
 	return nil

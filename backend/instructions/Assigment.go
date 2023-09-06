@@ -4,6 +4,7 @@ import (
 	"Server/environment"
 	"Server/expressions"
 	"Server/interfaces"
+	"fmt"
 )
 
 type ASSIGMENT struct {
@@ -30,12 +31,14 @@ func NewOpAsgmt(line int, col int, ide string, val interface{}, Op string) OPASS
 }
 
 func (a ASSIGMENT) Ejecutar(ast *environment.AST, env interface{}) interface{} {
+	fmt.Println("Entre ASSIGMENT")
 	result := a.Value.(interfaces.Expression).Ejecutar(ast, env)
 	env.(environment.Env).SetVar(a.Id, result)
-	return nil
+	return result
 }
 
 func (o OPASSIGMENT) Ejecutar(ast *environment.AST, env interface{}) interface{} {
+	fmt.Println("Entre OPASSIGMENT")
 	result := o.Value.(interfaces.Expression).Ejecutar(ast, env)
 	// Obtengo el valor de la variable
 	valVar := env.(environment.Env).GetVar(o.Id)
@@ -46,5 +49,5 @@ func (o OPASSIGMENT) Ejecutar(ast *environment.AST, env interface{}) interface{}
 	result.Value = tmpResult.Value
 	// Guardo el resultado en la variable
 	env.(environment.Env).SetVar(o.Id, result)
-	return nil
+	return result
 }
