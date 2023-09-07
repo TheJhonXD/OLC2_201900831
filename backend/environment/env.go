@@ -16,12 +16,13 @@ func NewEnv(prev interface{}, ide string) Env {
 	return Env{SymbolTable: make(map[string]Symbol), FuncTable: make(map[string]SymbolFunc), Prev: prev, Id: ide}
 }
 
-func (env Env) SaveVar(id string, value Symbol) {
+func (env Env) SaveVar(id string, value Symbol) bool {
 	if variable, ok := env.SymbolTable[id]; ok {
 		fmt.Println("Error: La variable \""+id+"\" ya existe, con valor: ", variable.Value.(int))
-		return
+		return false
 	}
 	env.SymbolTable[id] = value
+	return true
 }
 
 func (env Env) GetVar(id string) Symbol {
@@ -101,12 +102,12 @@ func (env Env) SaveFunc(id string, value SymbolFunc) {
 	env.FuncTable[id] = value
 }
 
-func (env Env) GetFunc(id string) SymbolFunc {
+func (env Env) GetFunc(id string) (SymbolFunc, bool) {
 	var tmp Env
 	tmp = env
 	for {
 		if v, ok := tmp.FuncTable[id]; ok {
-			return v
+			return v, true
 		}
 		if tmp.Prev == nil {
 			break
@@ -115,7 +116,7 @@ func (env Env) GetFunc(id string) SymbolFunc {
 		}
 	}
 	fmt.Println("La función \"", id, "\" no existe")
-	return SymbolFunc{RtnType: NULL}
+	return SymbolFunc{RtnType: NULL}, false
 }
 
 func (env Env) IsLoop() bool {

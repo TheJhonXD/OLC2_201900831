@@ -277,6 +277,8 @@ listparam returns [interfaces.Instruction listparaminstr]
     var aux string
     if $INOUT != nil {
         flag = true
+    }else{
+        flag = false
     }
     if $extr != nil {
         aux = $extr.text
@@ -288,6 +290,8 @@ listparam returns [interfaces.Instruction listparaminstr]
     var aux string
     if $INOUT != nil {
         flag = true
+    }else{
+        flag = false
     }
     if $extr != nil {
         aux = $extr.text
@@ -392,6 +396,7 @@ expr returns [interfaces.Expression e]
 | FAL { $e = expressions.NewPrimitive($FAL.line, $FAL.pos, false, environment.BOOLEAN) }
 | ID { $e = expressions.NewVar($ID.line, $ID.pos, $ID.text) }
 | methodvecrtrn { $e = $methodvecrtrn.methodinstrtrn }
+| NIL { $e = expressions.NewPrimitive($NIL.line, $NIL.pos, nil, environment.NULL) }
 ;
 
 /* primitive [interfaces.Expression p]  

@@ -33,21 +33,41 @@ func NewOpAsgmt(line int, col int, ide string, val interface{}, Op string) OPASS
 func (a ASSIGMENT) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 	fmt.Println("Entre ASSIGMENT")
 	result := a.Value.(interfaces.Expression).Ejecutar(ast, env)
-	env.(environment.Env).SetVar(a.Id, result)
+	if result.Type == environment.NULL {
+		ast.AddError(a.Line, a.Col, env.(environment.Env).Id, "No se puede operar con un valor nulo")
+		return result
+	}
+	result_env := env.(environment.Env).SetVar(a.Id, result)
+	if result_env.Type == environment.NULL {
+		ast.AddError(a.Line, a.Col, env.(environment.Env).Id, "La variable \""+a.Id+"\" no existe")
+		return result
+	}
 	return result
 }
 
 func (o OPASSIGMENT) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 	fmt.Println("Entre OPASSIGMENT")
 	result := o.Value.(interfaces.Expression).Ejecutar(ast, env)
+	if result.Type == environment.NULL {
+		ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No se puede operar con un valor nulo")
+		return result
+	}
 	// Obtengo el valor de la variable
 	valVar := env.(environment.Env).GetVar(o.Id)
+	if valVar.Type == environment.NULL {
+		ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "La variable \""+o.Id+"\" no existe")
+		return result
+	}
 	// Creo una nueva variable primitiva con el valor de la variable
 	newVar := expressions.NewPrimitive(o.Line, o.Col, valVar.Value, valVar.Type)
 	// Creo una operacion con el valor de la variable y el valor de la expresion
 	tmpResult := expressions.NewOperation(o.Line, o.Col, newVar, o.Op, o.Value.(interfaces.Expression)).Ejecutar(ast, env)
 	result.Value = tmpResult.Value
 	// Guardo el resultado en la variable
-	env.(environment.Env).SetVar(o.Id, result)
+	result_env := env.(environment.Env).SetVar(o.Id, result)
+	if result_env.Type == environment.NULL {
+		ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "La variable \""+o.Id+"\" no existe")
+		return result
+	}
 	return result
 }

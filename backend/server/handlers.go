@@ -1,6 +1,7 @@
 package server
 
 import (
+	"Server/environment"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -37,13 +38,15 @@ func Index(w http.ResponseWriter, r *http.Request) {
 func InputOutput(w http.ResponseWriter, r *http.Request) {
 	request := CodeEntry{}
 	response := Response{}
+	var aux []environment.Error_
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "%v", err)
 		return
 	}
-	response.Message = analyzer(request.Code)
+	response.Message, aux = analyzer(request.Code)
+	fmt.Println(aux)
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)

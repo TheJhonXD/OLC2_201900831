@@ -19,7 +19,11 @@ func NewCallFunc(line int, col int, ide string, args []interface{}) CallFunc {
 
 func (c CallFunc) Ejecutar(ast *environment.AST, env interface{}) environment.Symbol {
 	fmt.Println("Entre CallFunc Expressions")
-	result := env.(environment.Env).GetFunc(c.Id)
+	result, funcExists := env.(environment.Env).GetFunc(c.Id)
+	if !funcExists {
+		ast.AddError(c.Line, c.Col, env.(environment.Env).Id, "La funcion \""+c.Id+"\" no existe")
+		return environment.Symbol{Line: c.Line, Col: c.Col, Type: environment.NULL, Value: 0, Const: false}
+	}
 	var flagrun bool = true
 	var result2 environment.Symbol
 	if result.RtnType == environment.NULL {
@@ -31,10 +35,13 @@ func (c CallFunc) Ejecutar(ast *environment.AST, env interface{}) environment.Sy
 		var param environment.SymbolFuncParam
 		for _, p := range result.Args {
 			param = p.(interfaces.Instruction).Ejecutar(ast, env).(environment.SymbolFuncParam)
-			if param.Reference == true {
-				var_reference[param.InternalId] = ""
+			if param.Type != environment.NULL {
+				if param.Reference == true {
+					var_reference[param.InternalId] = ""
+				}
+				funcEnv.SaveVar(param.InternalId, environment.Symbol{Line: param.Line, Col: param.Col, Type: param.Type, Value: 0, Const: false})
 			}
-			funcEnv.SaveVar(param.InternalId, environment.Symbol{Line: param.Line, Col: param.Col, Type: param.Type, Value: 0, Const: false})
+
 		}
 		// Asignar valores a las variaables recientemente guardadas
 		for i, a := range c.Args {
@@ -108,15 +115,18 @@ func (c CallFunc) Ejecutar(ast *environment.AST, env interface{}) environment.Sy
 				}
 			} else {
 				for _, p := range result.Args {
+					fmt.Println("RESULT: ")
 					param = p.(interfaces.Instruction).Ejecutar(ast, env).(environment.SymbolFuncParam)
 					if param.ExternalId == a.(CallParams).Id {
-						var_name := a.(CallParams).Ejecutar(ast, env)
+						fmt.Println("RESULT2: ")
+						var_name := a.(CallParams).Id
+						fmt.Println("NAME: ", var_name)
 						var_param := funcEnv.GetVar(param.InternalId)
 						var_param.Value = a.(CallParams).Expression.Ejecutar(ast, env).Value
 						funcEnv.SetVar(param.InternalId, var_param)
 						if a.(CallParams).Amp == true && param.Reference == true {
-							var_reference[param.InternalId] = var_name.Value.(string)
-						} else {
+							var_reference[param.InternalId] = var_name
+						} else if a.(CallParams).Amp != param.Reference {
 							flagrun = false
 							fmt.Println("Error: No se puede asignar una variable por valor a una variable por referencia")
 						}
@@ -125,7 +135,7 @@ func (c CallFunc) Ejecutar(ast *environment.AST, env interface{}) environment.Sy
 				}
 			}
 		}
-
+		fmt.Println("EFFFFFE")
 		//Ejecutar las instrucciones de la funcion
 		if flagrun {
 			for _, inst := range result.Block {
