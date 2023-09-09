@@ -6,6 +6,7 @@ const btn_run = document.querySelector('#btn-run');
 const btn_clear = document.querySelector('#btn-clear');
 const terminal = document.querySelector('#terminal');
 const editor = document.querySelector('#editor');
+const save_as = document.querySelector('#save-as');
 
 
 /* *************************************************************************** */
@@ -186,6 +187,54 @@ function createSymbolTable(symbols){
         tbody.appendChild(tr);
     });
 }
+
+function leerArchivo() {
+    const fileInput = document.getElementById("fileInput");
+    const contenidoArchivo = document.getElementById("contenidoArchivo");
+  
+    const archivo = fileInput.files[0];
+  
+    if (archivo) {
+      const lector = new FileReader();
+  
+      lector.onload = function(evento) {
+        const contenido = evento.target.result;
+        contenidoArchivo.textContent = contenido;
+      };
+  
+      lector.readAsText(archivo);
+    } else {
+      contenidoArchivo.textContent = "No se ha seleccionado ningún archivo.";
+    }
+  }
+
+function guardarArchivo(name) {
+    // Obtener el contenido del textarea
+    const contenido = editor.value;
+  
+    // Crear un Blob con el contenido y especificar el tipo de archivo
+    const archivoBlob = new Blob([contenido], { type: 'text/plain' });
+  
+    // Crear un objeto URL para el Blob
+    const urlArchivo = window.URL.createObjectURL(archivoBlob);
+  
+    // Crear un enlace <a> para la descarga
+    const enlaceDescarga = document.createElement('a');
+    enlaceDescarga.href = urlArchivo;
+    enlaceDescarga.download = name + '.swift'; // Nombre del archivo
+  
+    // Simular un clic en el enlace para iniciar la descarga
+    enlaceDescarga.click();
+  
+    // Liberar el objeto URL cuando ya no sea necesario
+    window.URL.revokeObjectURL(urlArchivo);
+}
+
+/* Guardar como */
+save_as.addEventListener('click', (e) => {
+    guardarArchivo("archivo");
+});
+  
 
 /* Enviar datos a API golang */
 btn_run.addEventListener('click', async (e) => {
