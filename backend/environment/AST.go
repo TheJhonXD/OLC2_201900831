@@ -5,6 +5,7 @@ type AST struct {
 	Print        string
 	Errors       string
 	ErroresAux   []Error_
+	SymbolTable  []SymbolT
 }
 
 func NewAST(inst []interface{}, print string, err string) AST {
@@ -35,4 +36,13 @@ func (a *AST) AddError(line int, column int, scope string, description string) {
 
 func (a *AST) GetErrorsAux() []Error_ {
 	return a.ErroresAux
+}
+
+func (a *AST) AddSymbol(line int, column int, dataType TipoExpresion, symbolType string, scope string, id string) {
+	symbol := NewSymbolT(line, column, dataType, symbolType, scope, id)
+	a.SymbolTable = append(a.SymbolTable, symbol)
+}
+
+func (a *AST) GetSymbolTable() []SymbolT {
+	return a.SymbolTable
 }

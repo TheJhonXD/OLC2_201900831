@@ -20,6 +20,7 @@ func NewVectorMethod(line int, col int, ide string, expression interfaces.Expres
 func (v VectorMethod) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 	result := env.(environment.Env).GetVar(v.Id)
 	if result.Type == environment.NULL {
+		ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "La variable \""+v.Id+"\" no existe")
 		return environment.Symbol{Line: v.Line, Col: v.Col, Type: environment.NULL, Value: result, Const: result.Const}
 	}
 	if v.Method == "append" {
@@ -44,7 +45,7 @@ func (v VectorMethod) Ejecutar(ast *environment.AST, env interface{}) interface{
 			//Actualizo la variable
 			env.(environment.Env).SetVar(v.Id, result)
 		} else {
-			ast.SetError("Error Semantico: El vector \"" + v.Id + "\" esta vacio")
+			ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "El vector \""+v.Id+"\" esta vacio")
 		}
 	} else if v.Method == "remove" {
 		if len(result.Value.([]interface{})) > 0 {
@@ -61,10 +62,10 @@ func (v VectorMethod) Ejecutar(ast *environment.AST, env interface{}) interface{
 				//Actualizo la variable
 				env.(environment.Env).SetVar(v.Id, result)
 			} else {
-				ast.SetError("Error Semantico: El indice \"" + v.Id + "\" esta fuera de rango")
+				ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "El indice \""+v.Id+"\" esta fuera de rango")
 			}
 		} else {
-			ast.SetError("Error Semantico: El vector \"" + v.Id + "\" esta vacio")
+			ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "El vector \""+v.Id+"\" esta vacio")
 		}
 	}
 	return result

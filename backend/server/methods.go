@@ -21,7 +21,7 @@ func (this *TreeShapeListener) ExitS(ctx *parser.SContext) {
 	this.Code = ctx.GetCode()
 }
 
-func analyzer(code string) (string, []environment.Error_) {
+func analyzer(code string) (string, []environment.Error_, []environment.SymbolT) {
 	// Leyendo entrada
 	input := antlr.NewInputStream(code)
 	lexer := parser.NewSwiftLexer(input)
@@ -44,5 +44,5 @@ func analyzer(code string) (string, []environment.Error_) {
 		// fmt.Println(reflect.TypeOf(inst))
 		inst.(interfaces.Instruction).Ejecutar(&Ast, env)
 	}
-	return Ast.GetPrint(), Ast.GetErrorsAux()
+	return Ast.GetPrint(), Ast.GetErrorsAux(), Ast.GetSymbolTable()
 }

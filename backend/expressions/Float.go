@@ -3,7 +3,6 @@ package expressions
 import (
 	"Server/environment"
 	"Server/interfaces"
-	"fmt"
 	"strconv"
 )
 
@@ -22,7 +21,7 @@ func (f Float) Ejecutar(ast *environment.AST, env interface{}) environment.Symbo
 	if result.Type == environment.STRING {
 		floatNumber, err := strconv.ParseFloat(result.Value.(string), 64)
 		if err != nil {
-			fmt.Println("Error: No se puede convertir el valor a Float")
+			ast.AddError(f.Line, f.Col, env.(environment.Env).Id, "No se puede convertir la expresion a Float")
 			result.Value = 0
 			result.Type = environment.NULL
 			return result
@@ -34,7 +33,7 @@ func (f Float) Ejecutar(ast *environment.AST, env interface{}) environment.Symbo
 	} else {
 		result.Value = 0
 		result.Type = environment.NULL
-		fmt.Println("Error: No se puede convertir el valor a Float")
+		ast.AddError(f.Line, f.Col, env.(environment.Env).Id, "No se puede convertir la expresion a Float")
 	}
 	return result
 }

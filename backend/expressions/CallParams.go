@@ -4,6 +4,7 @@ import (
 	"Server/environment"
 	"Server/interfaces"
 	"fmt"
+	"strings"
 )
 
 type CallParams struct {
@@ -29,5 +30,11 @@ func (c CallParams) Ejecutar(ast *environment.AST, env interface{}) environment.
 	return result */
 	fmt.Println("Entre CallParams")
 	// fmt.Println("IDEEEEE: ", c.Expression)
+	fmt.Println(fmt.Sprintf("%T", c.Expression))
+	if strings.Contains(fmt.Sprintf("%T", c.Expression), "Primitive") {
+		return environment.Symbol{Value: 0}
+	} else if strings.Contains(fmt.Sprintf("%T", c.Expression), "Operation") {
+		return environment.Symbol{Value: 0}
+	}
 	return environment.Symbol{Value: c.Expression.(Variable).Id}
 }

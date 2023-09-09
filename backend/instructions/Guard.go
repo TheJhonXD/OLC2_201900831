@@ -36,11 +36,11 @@ func (g Guard) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 				}
 			}
 			if !flagTransfer {
-				ast.SetError("Error Semantico: El guard no tiene una instruccion de transferencia")
+				ast.AddError(g.Line, g.Col, env.(environment.Env).Id, "Guard debe tener una sentencia de transferencia")
 			}
 		}
 	} else {
-		ast.SetError("Error Semantico: La condicion del guard debe ser booleana")
+		ast.AddError(g.Line, g.Col, env.(environment.Env).Id, "La expresion de la sentencia guard debe ser booleana")
 		return result
 	}
 	return result

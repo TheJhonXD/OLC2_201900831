@@ -21,55 +21,91 @@ func NewIf(line int, col int, expression interfaces.Expression, block []interfac
 
 func (i If) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 	condition := i.Expression.Ejecutar(ast, env)
+	var result environment.Symbol
 	if condition.Type != environment.BOOLEAN {
-		ast.SetError("Error de tipos en la condicion del if")
+		ast.AddError(i.Line, i.Col, env.(environment.Env).Id, "La expresion de la sentencia if debe ser booleana")
 		return nil
 	}
 
 	if condition.Value == true {
+		fmt.Println("Entre IIIIIIf")
 		var ifEnv environment.Env
 		ifEnv = environment.NewEnv(env.(environment.Env), "IF")
 		for _, inst := range i.Block {
-			fmt.Printf("%T\n", inst)
-			inst.(interfaces.Instruction).Ejecutar(ast, ifEnv)
+			result = inst.(interfaces.Instruction).Ejecutar(ast, ifEnv).(environment.Symbol)
+			if result.BreakFlag {
+				break
+			}
+			if result.ContinueFlag {
+				break
+			}
+			if result.ReturnFlag {
+				// result.ReturnFlag = false
+				return result
+			}
 		}
-		return nil
+		return result
 	} else if i.ElseIf != nil {
-		fmt.Println("ELSE IF!!!!!!!!!!!!")
-		/* fmt.Printf("%T\n", i.ElseIf)
-		fmt.Printf("%T\n", i.Block) */
+		fmt.Println("Entre ELSE IF")
 		for _, elseIfInstr := range i.ElseIf {
-			// fmt.Println("ELSE IF")
-			// fmt.Printf("%T\n", elseIfInstr)
 			var condition_elif environment.Symbol
 			condition_elif = elseIfInstr.(If).Expression.Ejecutar(ast, env)
-			// fmt.Println(condition_elif.Value)
 			if condition_elif.Value == true {
-				// fmt.Println("SI")
 				var elseIfEnv environment.Env
 				elseIfEnv = environment.NewEnv(env.(environment.Env), "ELSE IF")
-				// fmt.Println(elseIfInstr.(If).ElseIf)
 				for _, instr := range elseIfInstr.(If).ElseIf {
-					instr.(interfaces.Instruction).Ejecutar(ast, elseIfEnv)
+					result = instr.(interfaces.Instruction).Ejecutar(ast, elseIfEnv).(environment.Symbol)
+					if result.BreakFlag {
+						break
+					}
+					if result.ContinueFlag {
+						break
+					}
+					if result.ReturnFlag {
+						// result.ReturnFlag = false
+						return result
+					}
 				}
-				return nil
+				return result
 			}
 		}
 		if i.ElseInstr != nil {
-			fmt.Println("ELSE!!!!!!!!!!!!")
+			fmt.Println("ENTREE??????")
 			var elseEnv environment.Env
 			elseEnv = environment.NewEnv(env.(environment.Env), "ELSE")
 			for _, instr := range i.ElseInstr {
-				instr.(interfaces.Instruction).Ejecutar(ast, elseEnv)
+				result = instr.(interfaces.Instruction).Ejecutar(ast, elseEnv).(environment.Symbol)
+				if result.BreakFlag {
+					break
+				}
+				if result.ContinueFlag {
+					break
+				}
+				if result.ReturnFlag {
+					// result.ReturnFlag = false
+					return result
+				}
 			}
+			return result
 		}
 	} else {
+		fmt.Println("Entre ELSE")
 		var elseEnv environment.Env
 		elseEnv = environment.NewEnv(env.(environment.Env), "ELSE")
 		for _, inst := range i.ElseInstr {
-			inst.(interfaces.Instruction).Ejecutar(ast, elseEnv)
+			result = inst.(interfaces.Instruction).Ejecutar(ast, elseEnv).(environment.Symbol)
+			if result.BreakFlag {
+				break
+			}
+			if result.ContinueFlag {
+				break
+			}
+			if result.ReturnFlag {
+				// result.ReturnFlag = false
+				return result
+			}
 		}
+		return result
 	}
-
-	return nil
+	return result
 }

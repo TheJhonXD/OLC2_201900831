@@ -21,7 +21,7 @@ func (w While) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 	var result environment.Symbol
 	condition := w.Expression.Ejecutar(ast, env)
 	if condition.Type != environment.BOOLEAN {
-		ast.SetError("Error de tipos en la condicion del while")
+		ast.AddError(w.Line, w.Col, env.(environment.Env).Id, "La condicion del while debe ser de tipo boolean")
 		return result
 	}
 

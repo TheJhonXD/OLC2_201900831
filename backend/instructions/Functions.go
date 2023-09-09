@@ -21,8 +21,13 @@ func NewFunction(line int, col int, ide string, args []interface{}, rtnType envi
 
 func (f Function) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 	fmt.Println("Entre Function")
+	if env.(environment.Env).Id != "GLOBAL" {
+		ast.AddError(f.Line, f.Col, env.(environment.Env).Id, "Las funciones solo pueden ser declaradas en el ambito global")
+		return environment.SymbolFunc{}
+	}
 	visited := make(map[string]bool)
 	var function environment.SymbolFunc
+	// Comprueba que no existan parametros repetidos
 	for _, p := range f.Args {
 		param := p.(interfaces.Instruction).Ejecutar(ast, env).(environment.SymbolFuncParam)
 		if param.ExternalId != "_" {
@@ -41,12 +46,13 @@ func (f Function) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 			visited[param.InternalId] = true
 		}
 	}
+	// Crea un nuevo simbolo de funcion
 	function = environment.SymbolFunc{Line: f.Line, Col: f.Col, Id: f.Id, Args: f.Args, RtnType: f.RtnType, Block: f.Block}
-	aux, existsFunc := env.(environment.Env).GetFunc(f.Id)
-	if existsFunc {
-		if aux.RtnType == environment.NULL {
-			env.(environment.Env).SaveFunc(f.Id, function)
-		}
+	// Comprueba que la funcion no exista y la guarda
+	_, existsFunc := env.(environment.Env).GetFunc(f.Id)
+	if !existsFunc {
+		env.(environment.Env).SaveFunc(f.Id, function)
+		ast.AddSymbol(f.Line, f.Col, f.RtnType, "Funcion", env.(environment.Env).Id, f.Id)
 	} else {
 		ast.AddError(f.Line, f.Col, env.(environment.Env).Id, "La funcion \""+f.Id+"\" ya existe")
 	}

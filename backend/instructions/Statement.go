@@ -22,6 +22,7 @@ func NewStmt(line int, col int, name string, tipo environment.TipoExpresion, val
 
 func (v Statement) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 	// Si no es nulo ejecuta la expresion
+	fmt.Println(v.Value.(interfaces.Expression))
 	result := v.Value.(interfaces.Expression).Ejecutar(ast, env)
 
 	/* CASTEO A PATITA */
@@ -33,29 +34,41 @@ func (v Statement) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 		flotante, _ := strconv.ParseFloat(fmt.Sprintf("%v", result.Value), 64)
 
 		if entero < int64(flotante) {
-			fmt.Println("Error de casteo")
+			ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "No se puedo convertir de float a int")
 			return result
 		}
 		result.Value, _ = strconv.ParseInt(fmt.Sprintf("%v", result.Value), 10, 64)
 		// result.Value = int(result.Value.(float32))
 		result.Type = environment.INTEGER
 	}
-
-	// fmt.Println("RESULTADO: ", result.Type)
-	// fmt.Println("VARIABLE: ", v.Type)
 	result.Const = v.Const
-
 	// Si el tipo de la variable es igual al tipo de la expresion o si la variable es un wildcard se guarda
 	if result.Type == v.Type {
-		env.(environment.Env).SaveVar(v.Name, result)
+
+		if !env.(environment.Env).SaveVar(v.Name, result) {
+			ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "La variable ya existe")
+		} else {
+			ast.AddSymbol(v.Line, v.Col, result.Type, "Variable", env.(environment.Env).Id, v.Name)
+		}
 	} else if result.Type == environment.WILDCARD {
-		env.(environment.Env).SaveVar(v.Name, result)
+
+		if !env.(environment.Env).SaveVar(v.Name, result) {
+			ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "La variable ya existe")
+		} else {
+			ast.AddSymbol(v.Line, v.Col, result.Type, "Variable", env.(environment.Env).Id, v.Name)
+		}
 	} else if v.Type == environment.NULL {
 		v.Type = result.Type
-		env.(environment.Env).SaveVar(v.Name, result)
-	} else {
-		fmt.Println("Los tipos no coinciden")
-	}
+		if !env.(environment.Env).SaveVar(v.Name, result) {
+			ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "La variable ya existe")
+		} else {
 
+			ast.AddSymbol(v.Line, v.Col, result.Type, "Variable", env.(environment.Env).Id, v.Name)
+		}
+	} else {
+		fmt.Println("Entre?")
+		ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "Los tipos no coinciden")
+	}
+	fmt.Println("AAAA")
 	return result
 }

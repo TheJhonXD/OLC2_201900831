@@ -3,7 +3,6 @@ package expressions
 import (
 	"Server/environment"
 	"Server/interfaces"
-	"fmt"
 	"strconv"
 )
 
@@ -24,7 +23,7 @@ func (i Integer) Ejecutar(ast *environment.AST, env interface{}) environment.Sym
 	} else if result.Type == environment.STRING {
 		entero, err := strconv.Atoi(result.Value.(string))
 		if err != nil {
-			fmt.Println("Error: No se puede convertir el valor a Integer")
+			ast.AddError(i.Line, i.Col, env.(environment.Env).Id, "No se puede convertir el valor a Integer")
 			result.Value = 0
 			result.Type = environment.NULL
 			return result
@@ -37,7 +36,7 @@ func (i Integer) Ejecutar(ast *environment.AST, env interface{}) environment.Sym
 	} else {
 		result.Value = 0
 		result.Type = environment.NULL
-		fmt.Println("Error: No se puede convertir el valor a Integer")
+		ast.AddError(i.Line, i.Col, env.(environment.Env).Id, "No se puede convertir el valor a Integer")
 	}
 	return result
 }

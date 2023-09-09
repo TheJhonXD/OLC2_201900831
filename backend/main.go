@@ -14,6 +14,7 @@ func main() {
 	router.Use(server.CorsMiddleware)
 	router.HandleFunc("/", server.Index)
 	router.HandleFunc("/run", server.InputOutput)
+	router.HandleFunc("/tree", server.TreeParse)
 
 	/* Muestra el la ruta del servidor */
 	fmt.Println("*****************************************************************")

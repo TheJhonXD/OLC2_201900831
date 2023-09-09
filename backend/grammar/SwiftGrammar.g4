@@ -36,21 +36,21 @@ block returns [[]interface{} blk]
 ;
 
 instruction returns [interfaces.Instruction inst]
-: printstmt { $inst = $printstmt.prnt}
-| callfuncinstruction { $inst = $callfuncinstruction.callfuncinstr}
-| ifstmt { $inst = $ifstmt.ifinstr }
-| varstmt { $inst = $varstmt.var}
-| varasgmt { $inst = $varasgmt.asgmt}
-| conststmt { $inst = $conststmt.const}
-| switchstmt { $inst = $switchstmt.switchinstr}
-| whilestmt { $inst = $whilestmt.whileinstr}
-| forstmt { $inst = $forstmt.forinstr}
-| guardstmt { $inst = $guardstmt.guardinstr}
-| transferstmt { $inst = $transferstmt.trns}
-| vectorstmt { $inst = $vectorstmt.vectorinstr}
-| methodvec { $inst = $methodvec.methodinstr}
-| vecaccess { $inst = $vecaccess.vecacc}
-| funcstmt { $inst = $funcstmt.funcinstr}
+: printstmt  PUNTOCOMA? { $inst = $printstmt.prnt}
+| callfuncinstruction PUNTOCOMA? { $inst = $callfuncinstruction.callfuncinstr}
+| ifstmt PUNTOCOMA? { $inst = $ifstmt.ifinstr }
+| varstmt PUNTOCOMA? { $inst = $varstmt.var}
+| varasgmt PUNTOCOMA? { $inst = $varasgmt.asgmt}
+| conststmt PUNTOCOMA? { $inst = $conststmt.const}
+| switchstmt PUNTOCOMA? { $inst = $switchstmt.switchinstr}
+| whilestmt PUNTOCOMA? { $inst = $whilestmt.whileinstr}
+| forstmt PUNTOCOMA? { $inst = $forstmt.forinstr}
+| guardstmt PUNTOCOMA? { $inst = $guardstmt.guardinstr}
+| transferstmt PUNTOCOMA? { $inst = $transferstmt.trns}
+| vectorstmt PUNTOCOMA? { $inst = $vectorstmt.vectorinstr}
+| methodvec PUNTOCOMA? { $inst = $methodvec.methodinstr}
+| vecaccess PUNTOCOMA? { $inst = $vecaccess.vecacc}
+| funcstmt PUNTOCOMA? { $inst = $funcstmt.funcinstr}
 ;
 
 //* Instrucción print
@@ -74,7 +74,7 @@ printexprlist returns [interfaces.Expression prntexpr]
 //* Sentencia if else
 ifstmt returns [interfaces.Instruction ifinstr]
 : IF expr LLAVEIZQ block LLAVEDER { $ifinstr = instructions.NewIf($IF.line, $IF.pos, $expr.e, $block.blk, nil, nil) }
-| IF expr LLAVEIZQ firstBlk=block LLAVEDER elif+=elseifstmt+ ELSE elsestmt?{ 
+| IF expr LLAVEIZQ firstBlk=block LLAVEDER elif+=elseifstmt+ elsestmt{ 
     var ifInterfaces []interface{}
     // fmt.Println($elif)
     for _, e := range localctx.(*IfstmtContext).GetElif() {
@@ -82,8 +82,17 @@ ifstmt returns [interfaces.Instruction ifinstr]
         fmt.Println(e.GetElifinstr())
     }
     $ifinstr = instructions.NewIf($IF.line, $IF.pos, $expr.e, $firstBlk.blk, ifInterfaces, $elsestmt.elseinstr)
- }
-| IF expr LLAVEIZQ firstBlk=block LLAVEDER ELSE elsestmt { $ifinstr = instructions.NewIf($IF.line, $IF.pos, $expr.e, $firstBlk.blk, nil, $elsestmt.elseinstr) }
+}
+| IF expr LLAVEIZQ firstBlk=block LLAVEDER elif+=elseifstmt+ {
+    var ifInterfaces []interface{}
+    // fmt.Println($elif)
+    for _, e := range localctx.(*IfstmtContext).GetElif() {
+        ifInterfaces = append(ifInterfaces, e.GetElifinstr())
+        fmt.Println(e.GetElifinstr())
+    }
+    $ifinstr = instructions.NewIf($IF.line, $IF.pos, $expr.e, $firstBlk.blk, ifInterfaces, nil)
+}
+| IF expr LLAVEIZQ firstBlk=block LLAVEDER elsestmt { $ifinstr = instructions.NewIf($IF.line, $IF.pos, $expr.e, $firstBlk.blk, nil, $elsestmt.elseinstr) }
 ;
 
 //* Instrucción else if
@@ -95,7 +104,7 @@ elseifstmt returns [interfaces.Instruction elifinstr]
 
 //* Instrucción else
 elsestmt returns [[]interface{} elseinstr]
-: LLAVEIZQ block LLAVEDER { $elseinstr = $block.blk }
+: ELSE LLAVEIZQ block LLAVEDER { $elseinstr = $block.blk }
 ;
 
 //* Declaracion de variables
@@ -357,13 +366,14 @@ funcembed returns [interfaces.Expression funcembedexpr]
 expr returns [interfaces.Expression e]
 //Agregar para menos unario
 : op=SUB right=expr { $e = expressions.NewOperation($right.start.GetLine(), $right.start.GetColumn(), $right.e, "unario", expressions.NewPrimitive($op.line, $op.pos, -1, environment.INTEGER)) }
+| op=NOT right=expr { $e = expressions.NewOperation($right.start.GetLine(), $right.start.GetColumn(), $right.e, $op.text, expressions.NewPrimitive($op.line, $op.pos, false, environment.BOOLEAN)) }
 | left=expr op=(MUL|DIV|MOD) right=expr { $e = expressions.NewOperation($left.start.GetLine(), $left.start.GetColumn(), $left.e, $op.text, $right.e) }
 | left=expr op=(ADD|SUB) right=expr { $e = expressions.NewOperation($left.start.GetLine(), $left.start.GetColumn(), $left.e, $op.text, $right.e) }
 | left=expr op=(MAY_IG|MAYOR) right=expr { $e = expressions.NewOperation($left.start.GetLine(), $left.start.GetColumn(), $left.e, $op.text, $right.e) }
 | left=expr op=(MEN_IG|MENOR) right=expr { $e = expressions.NewOperation($left.start.GetLine(), $left.start.GetColumn(), $left.e, $op.text, $right.e) }
 | left=expr op=(IG_IG|DIF) right=expr { $e = expressions.NewOperation($left.start.GetLine(), $left.start.GetColumn(), $left.e, $op.text, $right.e) }
-| left=expr AND right=expr { $e = expressions.NewOperation($left.start.GetLine(), $left.start.GetColumn(), $left.e, $op.text, $right.e) }
-| left=expr OR right=expr { $e = expressions.NewOperation($left.start.GetLine(), $left.start.GetColumn(), $left.e, $op.text, $right.e) }
+| left=expr AND right=expr { $e = expressions.NewOperation($left.start.GetLine(), $left.start.GetColumn(), $left.e, $AND.text, $right.e) }
+| left=expr OR right=expr { $e = expressions.NewOperation($left.start.GetLine(), $left.start.GetColumn(), $left.e, $OR.text, $right.e) }
 | PARIZQ expr PARDER { $e = $expr.e }
 | NUMBER                             
     {
@@ -396,31 +406,5 @@ expr returns [interfaces.Expression e]
 | FAL { $e = expressions.NewPrimitive($FAL.line, $FAL.pos, false, environment.BOOLEAN) }
 | ID { $e = expressions.NewVar($ID.line, $ID.pos, $ID.text) }
 | methodvecrtrn { $e = $methodvecrtrn.methodinstrtrn }
-| NIL { $e = expressions.NewPrimitive($NIL.line, $NIL.pos, nil, environment.NULL) }
+| NIL { $e = expressions.NewPrimitive($NIL.line, $NIL.pos, "nil", environment.NULL) }
 ;
-
-/* primitive [interfaces.Expression p]  
-: NUMBER                             
-    {
-        if (strings.Contains($NUMBER.text,".")){
-            num,err := strconv.ParseFloat($NUMBER.text, 64);
-            if err!= nil{
-                fmt.Println(err)
-            }
-            $p = expressions.NewPrimitive($NUMBER.line,$NUMBER.pos,num,environment.FLOAT)
-        }else{
-            num,err := strconv.Atoi($NUMBER.text)
-            if err!= nil{
-                fmt.Println(err)
-            }
-            $p = expressions.NewPrimitive($NUMBER.line,$NUMBER.pos,num,environment.INTEGER)
-        }
-    }
-| STRING
-    {
-        str := $STRING.text
-        $p = expressions.NewPrimitive($STRING.line, $STRING.pos,str[1:len(str)-1],environment.STR)
-    }                        
-| TRU { $p = expressions.NewPrimitive($TRU.line, $TRU.pos,true,environment.BOOLEAN) }
-| FAL { $p = expressions.NewPrimitive($FAL.line, $FAL.pos,false,environment.BOOLEAN) }
-; */

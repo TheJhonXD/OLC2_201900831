@@ -22,6 +22,7 @@ func NewVectorAsgmt(line int, col int, ide string, position interfaces.Expressio
 func (v VectorAsgmt) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 	result := env.(environment.Env).GetVar(v.Id)
 	if result.Type == environment.NULL {
+		ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "La variable \""+v.Id+"\" no existe")
 		return result
 	}
 	if v.Id2ndVector != "" {
@@ -35,14 +36,14 @@ func (v VectorAsgmt) Ejecutar(ast *environment.AST, env interface{}) interface{}
 						result.Value.([]interface{})[pos.Value.(int)] = result2.Value
 						env.(environment.Env).SetVar(v.Id, result)
 					} else {
-						ast.SetError("Error Semantico: El tipo de dato \"" + v.Id2ndVector + "\" no coincide con el tipo de dato del vector \"" + v.Id + "\"")
+						ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "El tipo de dato \""+v.Id2ndVector+"\" no coincide con el tipo de dato del vector \""+v.Id+"\"")
 					}
 				}
 			} else {
-				ast.SetError("Error Semantico: El indice \"" + v.Id + "\" esta fuera de rango")
+				ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "El indice \""+v.Id+"\" esta fuera de rango")
 			}
 		} else {
-			ast.SetError("Error Semantico: El indice \"" + v.Id + "\" debe ser de tipo INTEGER")
+			ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "El indice \""+v.Id+"\" debe ser de tipo INTEGER")
 		}
 	} else {
 		pos := v.Position.Ejecutar(ast, env)
@@ -54,14 +55,14 @@ func (v VectorAsgmt) Ejecutar(ast *environment.AST, env interface{}) interface{}
 						result.Value.([]interface{})[pos.Value.(int)] = result2.Value
 						env.(environment.Env).SetVar(v.Id, result)
 					} else {
-						ast.SetError("Error Semantico: El tipo de dato \"" + v.Id2ndVector + "\" no coincide con el tipo de dato del vector \"" + v.Id + "\"")
+						ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "El tipo de dato \""+v.Id2ndVector+"\" no coincide con el tipo de dato del vector \""+v.Id+"\"")
 					}
 				}
 			} else {
-				ast.SetError("Error Semantico: El indice \"" + v.Id + "\" esta fuera de rango")
+				ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "El indice \""+v.Id+"\" esta fuera de rango")
 			}
 		} else {
-			ast.SetError("Error Semantico: El indice \"" + v.Id + "\" debe ser de tipo INTEGER")
+			ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "El indice \""+v.Id+"\" debe ser de tipo INTEGER")
 		}
 	}
 	return result

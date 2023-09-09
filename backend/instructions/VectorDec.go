@@ -37,11 +37,11 @@ func (v VectorDec) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 			if resultEnv.Type == environment.NULL {
 				env.(environment.Env).SaveVar(v.Id, result)
 			} else {
-				ast.SetError("Error Semantico: El vector \"" + v.Id + "\" ya existe")
+				ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "El vector \""+v.Id+"\" ya existe")
 			}
 		} else {
 			result.Type = environment.NULL
-			ast.SetError("Error Semantico: Los valores del vector no coinciden con el tipo del vector")
+			ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "Los tipos de datos no coinciden")
 		}
 
 	} else {
@@ -51,7 +51,7 @@ func (v VectorDec) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 			values = append(values, nil)
 			env.(environment.Env).SaveVar(v.Id, result)
 		} else {
-			ast.SetError("Error Semantico: El vector \"" + v.Id + "\" ya existe")
+			ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "El vector \""+v.Id+"\" ya existe")
 		}
 	}
 	return result

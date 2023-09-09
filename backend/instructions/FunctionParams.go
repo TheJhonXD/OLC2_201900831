@@ -20,7 +20,7 @@ func (p Param) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 		p.ExternalId = p.InternalId
 	}
 	if p.Type == environment.NULL {
-		ast.SetError("Error en la definición de parámetros")
+		ast.AddError(p.Line, p.Col, env.(environment.Env).Id, "Error en la definicion de parametros")
 	}
 
 	return environment.SymbolFuncParam{Line: p.Line, Col: p.Col, ExternalId: p.ExternalId, InternalId: p.InternalId, Reference: p.Reference, Type: p.Type}

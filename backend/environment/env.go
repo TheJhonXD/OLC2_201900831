@@ -18,7 +18,7 @@ func NewEnv(prev interface{}, ide string) Env {
 
 func (env Env) SaveVar(id string, value Symbol) bool {
 	if variable, ok := env.SymbolTable[id]; ok {
-		fmt.Println("Error: La variable \""+id+"\" ya existe, con valor: ", variable.Value.(int))
+		fmt.Println("Error: La variable \""+id+"\" ya existe, con valor: ", variable.Value)
 		return false
 	}
 	env.SymbolTable[id] = value
@@ -123,7 +123,7 @@ func (env Env) IsLoop() bool {
 	var tmp Env
 	tmp = env
 	for {
-		if env.Id == "FOR IN" || env.Id == "WHILE" {
+		if tmp.Id == "FOR IN" || tmp.Id == "WHILE" {
 			return true
 		}
 		if tmp.Prev != nil {
@@ -140,7 +140,7 @@ func (env Env) IsSwitch() bool {
 	var tmp Env
 	tmp = env
 	for {
-		if env.Id == "SWITCH" {
+		if tmp.Id == "SWITCH" {
 			return true
 		}
 		if tmp.Prev != nil {

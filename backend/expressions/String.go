@@ -3,7 +3,6 @@ package expressions
 import (
 	"Server/environment"
 	"Server/interfaces"
-	"fmt"
 	"strconv"
 )
 
@@ -31,7 +30,7 @@ func (s String) Ejecutar(ast *environment.AST, env interface{}) environment.Symb
 	} else {
 		result.Value = ""
 		result.Type = environment.NULL
-		fmt.Println("Error: No se puede convertir el valor a String")
+		ast.AddError(s.Line, s.Col, env.(environment.Env).Id, "No se puede convertir la expresion a String")
 	}
 	return result
 }

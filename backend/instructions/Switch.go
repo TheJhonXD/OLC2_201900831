@@ -19,6 +19,7 @@ func NewSwitch(line int, col int, expression interfaces.Expression, cases []inte
 
 func (s Switch) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 	switch_var := s.Expression.Ejecutar(ast, env)
+	var result environment.Symbol
 	if switch_var.Type != environment.NULL {
 		for _, case_ := range s.Cases {
 			case_var := case_.(Switch).Expression.Ejecutar(ast, env)
@@ -26,16 +27,32 @@ func (s Switch) Ejecutar(ast *environment.AST, env interface{}) interface{} {
 				var caseEnv environment.Env
 				caseEnv = environment.NewEnv(env.(environment.Env), "SWITCH")
 				for _, instr := range case_.(Switch).Cases {
-					instr.(interfaces.Instruction).Ejecutar(ast, caseEnv)
+					result = instr.(interfaces.Instruction).Ejecutar(ast, caseEnv).(environment.Symbol)
+					if result.ContinueFlag {
+						ast.AddError(s.Line, s.Col, caseEnv.Id, "No se puede usar continue en un switch")
+					}
+					if result.ReturnFlag {
+						// result.ReturnFlag = false
+						return result
+					}
 				}
-				return nil
+				return result
 			}
 		}
 		if s.Default != nil {
 			for _, instr := range s.Default {
-				instr.(interfaces.Instruction).Ejecutar(ast, env)
+				result = instr.(interfaces.Instruction).Ejecutar(ast, env).(environment.Symbol)
+				if result.ContinueFlag {
+					ast.AddError(s.Line, s.Col, env.(environment.Env).Id, "No se puede usar continue en un switch")
+				}
+				if result.ReturnFlag {
+					// result.ReturnFlag = false
+					return result
+				}
 			}
 		}
+	} else {
+		ast.AddError(s.Line, s.Col, env.(environment.Env).Id, "No se puede evaluar la expresion del switch")
 	}
 	return nil
 }

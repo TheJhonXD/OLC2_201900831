@@ -23,23 +23,22 @@ func NewOperation(line int, col int, op1 interfaces.Expression, operator string,
 func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.Symbol {
 	var dominante environment.TipoExpresion
 
-	table := [5][5]environment.TipoExpresion{
-		/* 			INTEGER				FLOAT				STRING 				BOOLEAN				 */
-		{environment.INTEGER, environment.FLOAT, environment.STRING, environment.BOOLEAN, environment.NULL}, // FLOAT
-		{environment.FLOAT, environment.FLOAT, environment.STRING, environment.NULL, environment.NULL},      // STRING
-		{environment.STRING, environment.STRING, environment.STRING, environment.STRING, environment.NULL},  // BOOLEAN
-		{environment.BOOLEAN, environment.NULL, environment.STRING, environment.BOOLEAN, environment.NULL},  // NULL
+	/* table := [5][5]environment.TipoExpresion{
+		{environment.INTEGER, environment.FLOAT, environment.STRING, environment.BOOLEAN, environment.NULL},
+		{environment.FLOAT, environment.FLOAT, environment.STRING, environment.NULL, environment.NULL},
+		{environment.STRING, environment.STRING, environment.STRING, environment.STRING, environment.NULL},
+		{environment.BOOLEAN, environment.NULL, environment.STRING, environment.BOOLEAN, environment.NULL},
 		{environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL},
-	}
+	} */
 
 	sum_table := [6][6]environment.TipoExpresion{
 		/* 			INTEGER				FLOAT				STRING 				BOOLEAN			NULL 				CHAR		 */
 		{environment.INTEGER, environment.FLOAT, environment.NULL, environment.NULL, environment.NULL, environment.NULL}, // INTEGER
 		{environment.FLOAT, environment.FLOAT, environment.NULL, environment.NULL, environment.NULL, environment.NULL},   // FLOAT
-		{environment.NULL, environment.NULL, environment.STRING, environment.NULL, environment.NULL, environment.NULL},   // STRING
+		{environment.NULL, environment.NULL, environment.STRING, environment.NULL, environment.NULL, environment.STRING}, // STRING
 		{environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL},     // BOOLEAN
 		{environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL},     // NULL
-		{environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL},     // CHAR
+		{environment.NULL, environment.NULL, environment.STRING, environment.NULL, environment.NULL, environment.STRING}, // CHAR
 	}
 
 	sub_mult_div_table := [6][6]environment.TipoExpresion{
@@ -62,6 +61,16 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 		{environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL},    // CHAR
 	}
 
+	rel_table := [6][6]environment.TipoExpresion{
+		/* 			INTEGER				FLOAT				STRING 				BOOLEAN			NULL 				CHAR		 */
+		{environment.INTEGER, environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL}, // INTEGER
+		{environment.NULL, environment.FLOAT, environment.NULL, environment.NULL, environment.NULL, environment.NULL},   // FLOAT
+		{environment.NULL, environment.NULL, environment.STRING, environment.NULL, environment.NULL, environment.NULL},  // STRING
+		{environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL},    // BOOLEAN
+		{environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL},    // NULL
+		{environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.CHAR},    // CHAR
+	}
+
 	var op1, op2 environment.Symbol
 	op1 = o.Op_izq.Ejecutar(ast, env)
 	op2 = o.Op_der.Ejecutar(ast, env)
@@ -82,7 +91,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 				r2 := fmt.Sprintf("%v", op2.Value)
 				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: r1 + r2, Const: false}
 			} else {
-				ast.SetError("ERROR: No es posible sumar")
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible sumar")
 			}
 		}
 	case "-":
@@ -95,7 +104,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 				val2, _ := strconv.ParseFloat(fmt.Sprintf("%v", op2.Value), 64)
 				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: val1 - val2, Const: false}
 			} else {
-				ast.SetError("ERROR: No es posible restar")
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible restar")
 			}
 		}
 	case "*":
@@ -108,7 +117,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 				val2, _ := strconv.ParseFloat(fmt.Sprintf("%v", op2.Value), 64)
 				return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: val1 * val2, Const: false}
 			} else {
-				ast.SetError("ERROR: No es posible multiplicar")
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible multiplicar")
 			}
 		}
 	case "/":
@@ -118,7 +127,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 				if op2.Value.(int) != 0 {
 					return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: op1.Value.(int) / op2.Value.(int), Const: false}
 				} else {
-					fmt.Println("ERROR: No es posible dividir entre 0")
+					ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible dividir entre 0")
 				}
 			} else if dominante == environment.FLOAT {
 				val1, _ := strconv.ParseFloat(fmt.Sprintf("%v", op1.Value), 64)
@@ -126,10 +135,10 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 				if val2 != 0 {
 					return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: val1 / val2, Const: false}
 				} else {
-					fmt.Println("ERROR: No es posible dividir entre 0")
+					ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible dividir entre 0")
 				}
 			} else {
-				ast.SetError("ERROR: No es posible dividir")
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible dividir")
 			}
 		}
 	case "%":
@@ -139,10 +148,10 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 				if op2.Value.(int) != 0 {
 					return environment.Symbol{Line: o.Line, Col: o.Col, Type: dominante, Value: op1.Value.(int) % op2.Value.(int), Const: false}
 				} else {
-					fmt.Println("ERROR: No es posible aplicar modulo")
+					ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible aplicar modulo")
 				}
 			} else {
-				ast.SetError("ERROR: No es posible aplicar modulo")
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible aplicar modulo")
 			}
 		}
 
@@ -154,12 +163,12 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 				val1, _ := strconv.ParseFloat(fmt.Sprintf("%v", op1.Value), 64)
 				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.FLOAT, Value: 0 - val1, Const: false}
 			} else {
-				ast.SetError("ERROR: No es posible aplicar menos unario")
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible aplicar menos unario")
 			}
 		}
 	case "<":
 		{
-			dominante = table[op1.Type][op2.Type]
+			dominante = rel_table[op1.Type][op2.Type]
 			if dominante == environment.INTEGER {
 				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(int) < op2.Value.(int), Const: false}
 			} else if dominante == environment.FLOAT {
@@ -167,12 +176,12 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 				val2, _ := strconv.ParseFloat(fmt.Sprintf("%v", op2.Value), 64)
 				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: val1 < val2, Const: false}
 			} else {
-				ast.SetError("ERROR: No es posible comparar")
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible comparar si es menor")
 			}
 		}
 	case ">":
 		{
-			dominante = table[op1.Type][op2.Type]
+			dominante = rel_table[op1.Type][op2.Type]
 			if dominante == environment.INTEGER {
 				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(int) > op2.Value.(int), Const: false}
 			} else if dominante == environment.FLOAT {
@@ -180,12 +189,12 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 				val2, _ := strconv.ParseFloat(fmt.Sprintf("%v", op2.Value), 64)
 				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: val1 > val2, Const: false}
 			} else {
-				ast.SetError("ERROR: No es posible comparar")
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible comparar si es mayor")
 			}
 		}
 	case "<=":
 		{
-			dominante = table[op1.Type][op2.Type]
+			dominante = rel_table[op1.Type][op2.Type]
 			if dominante == environment.INTEGER {
 				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(int) <= op2.Value.(int), Const: false}
 			} else if dominante == environment.FLOAT {
@@ -193,55 +202,64 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}) environment.S
 				val2, _ := strconv.ParseFloat(fmt.Sprintf("%v", op2.Value), 64)
 				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: val1 <= val2, Const: false}
 			} else {
-				ast.SetError("ERROR: No es posible comparar")
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible comparar si es menor o igual")
 			}
 		}
 	case ">=":
 		{
-			dominante = table[op1.Type][op2.Type]
+			dominante = rel_table[op1.Type][op2.Type]
 			if dominante == environment.INTEGER {
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(int) >= op2.Value.(int), Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(int) >= op2.Value.(int), Const: false}
 			} else if dominante == environment.FLOAT {
 				val1, _ := strconv.ParseFloat(fmt.Sprintf("%v", op1.Value), 64)
 				val2, _ := strconv.ParseFloat(fmt.Sprintf("%v", op2.Value), 64)
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: val1 >= val2, Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: val1 >= val2, Const: false}
 			} else {
-				ast.SetError("ERROR: No es posible comparar")
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible comparar si es mayor o igual")
 			}
 		}
 	case "==":
 		{
 			if op1.Type == op2.Type {
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value == op2.Value, Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value == op2.Value, Const: false}
 			} else {
-				ast.SetError("ERROR: No es posible comparar")
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible comparar la igualdad")
 			}
 		}
 	case "!=":
 		{
 			if op1.Type == op2.Type {
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value != op2.Value, Const: true}
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value != op2.Value, Const: false}
 			} else {
-				ast.SetError("ERROR: No es posible comparar")
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es operar la desigualdad")
 			}
 		}
 	case "&&":
 		{
-			if op1.Type == environment.BOOLEAN && op2.Type == environment.BOOLEAN {
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(bool) && op2.Value.(bool), Const: true}
+			if (op1.Type == environment.BOOLEAN) && (op2.Type == environment.BOOLEAN) {
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(bool) && op2.Value.(bool), Const: false}
 			} else {
-				ast.SetError("ERROR: No es posible comparar")
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible comparar")
 			}
 		}
 	case "||":
 		{
-			if op1.Type == environment.BOOLEAN && op2.Type == environment.BOOLEAN {
-				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(bool) || op2.Value.(bool), Const: true}
+			if (op1.Type == environment.BOOLEAN) && (op2.Type == environment.BOOLEAN) {
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: op1.Value.(bool) || op2.Value.(bool), Const: false}
 			} else {
-				ast.SetError("ERROR: No es posible comparar")
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible comparar")
+			}
+		}
+	case "!":
+		{
+			if op1.Type == environment.BOOLEAN {
+				return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.BOOLEAN, Value: !op1.Value.(bool), Const: false}
+			} else {
+				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible negar")
 			}
 		}
 	}
+
 	var result interface{}
 	return environment.Symbol{Line: o.Line, Col: o.Col, Type: environment.NULL, Value: result}
 }

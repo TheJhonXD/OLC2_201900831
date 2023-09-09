@@ -1,5 +1,4 @@
 grammar SwiftGrammar; 
-// import SwiftLexer; 
 
 options {
   tokenVocab = SwiftLexer;
@@ -30,37 +29,34 @@ instruction
 | vecaccess
 | funcstmt
 ;
-
-//* Instrucción print
 printstmt
-: PRINT PARIZQ expr PARDER
+: PRINT PARIZQ printexprlist PARDER
 ;
 
-//* Sentencia if else
+printexprlist
+: expr COMA
+| expr
+;
+
 ifstmt
 : IF expr LLAVEIZQ block LLAVEDER
-| IF expr LLAVEIZQ firstBlk=block LLAVEDER elif+=elseifstmt+ ELSE elsestmt?
-| IF expr LLAVEIZQ firstBlk=block LLAVEDER ELSE elsestmt
+| IF expr LLAVEIZQ firstBlk=block LLAVEDER elif+=elseifstmt+ elsestmt
+| IF expr LLAVEIZQ firstBlk=block LLAVEDER elif+=elseifstmt+
+| IF expr LLAVEIZQ firstBlk=block LLAVEDER elsestmt
 ;
 
-//* Instrucción else if
 elseifstmt
 : ELSE IF expr LLAVEIZQ block LLAVEDER
 ;
-
-//* Instrucción else
 elsestmt
-: LLAVEIZQ block LLAVEDER
+: ELSE LLAVEIZQ block LLAVEDER
 ;
-
-//* Declaracion de variables
 varstmt
 : VAR ID COLON tipo IG expr
 | VAR ID IG expr            
 | VAR ID COLON tipo Q_MARK 
 ;
 
-//* Tipo  de variables
 tipo
 :INT
 |FLOAT
@@ -69,53 +65,43 @@ tipo
 |CHARACTER 
 ;
 
-//* Asignacion de valor a una variable
 varasgmt
 : ID IG expr
 | ID ADD IG expr
 | ID SUB IG expr
 ;
 
-//* Declaracion de constantes
 conststmt
 : LET ID IG expr
 | LET ID COLON tipo IG expr
 ;
 
-//* Sentencia Switch-Case
 switchstmt
 : SWITCH expr LLAVEIZQ casesvar+=casestmt+ defaultstmt? LLAVEDER
 ;
 
-//* Instrucción case
 casestmt
 : CASE expr COLON block BREAK?
 ;
 
-//* Instrucción default
 defaultstmt
 : DEFAULT COLON block BREAK?
 ;
 
-//* Sentencia While
 whilestmt
 : WHILE expr LLAVEIZQ block LLAVEDER
 ;
 
-//* Sentencia For
 forstmt
 : FOR ID IN STRING LLAVEIZQ block LLAVEDER
 | FOR ID IN left=expr RANGEPTS right=expr LLAVEIZQ block LLAVEDER
 | FOR first=ID IN second=ID LLAVEIZQ block LLAVEDER
 ;
 
-//* Instrucción Guard
 guardstmt
 : GUARD expr ELSE LLAVEIZQ block LLAVEDER
 ;
 
-
-//* Sentencias de transferencia
 transferstmt
 : BREAK
 | CONTINUE
@@ -123,45 +109,37 @@ transferstmt
 | RETURN expr
 ;
 
-//* Declaración de vectores
 vectorstmt
 : VAR ID COLON CORCHIZQ tipo CORCHDER definestmt
 ;
 
-//* Definicion de valor de un vector
 definestmt
 : IG CORCHIZQ lista += listexpr+ CORCHDER
 | IG CORCHIZQ CORCHDER
 ;
 
-//* Lista de expresiones
 listexpr
 : expr COMA
 | expr
 ;
 
-//* Metodos de vectores
 methodvec
 : ID PUNTO APPEND PARIZQ expr PARDER 
 | ID PUNTO REMOVELAST PARIZQ PARDER 
 | ID PUNTO REMOVE PARIZQ expr PARDER 
 ;
 
-//* Metodos de vectores que retornan un valor
 methodvecrtrn
 : ID PUNTO EMPTY 
 | ID PUNTO COUNT 
 | ID CORCHIZQ expr CORCHDER
 ;
 
-//* Acceso a vectores
 vecaccess
 : firstId=ID CORCHIZQ first=expr CORCHDER IG secondId=ID CORCHIZQ second=expr CORCHDER
 | ID CORCHIZQ first=expr CORCHDER IG second=expr
 ;
 
-
-//* Funciones
 funcstmt
 : FUNC ID PARIZQ lista+=listparam+ PARDER ARROW tipo LLAVEIZQ block LLAVEDER
 | FUNC ID PARIZQ lista+=listparam+ PARDER LLAVEIZQ block LLAVEDER
@@ -169,7 +147,6 @@ funcstmt
 | FUNC ID PARIZQ PARDER LLAVEIZQ block LLAVEDER
 ;
 
-//* Lista de parametros
 listparam
 : extr=(ID | CAME )? inter=ID COLON INOUT? tipo COMA
 | extr=(ID | CAME )? inter=ID COLON INOUT? tipo
@@ -190,9 +167,14 @@ listparamcall
 | (ID COLON)? AMP? expr
 ;
 
-//* Gramatica para Expresiones
+funcembed
+: STR PARIZQ expr PARDER
+| INT PARIZQ expr PARDER
+| FLOAT PARIZQ expr PARDER
+;
+
+
 expr
-//Agregar para menos unario
 : op=SUB right=expr
 | left=expr op=(MUL|DIV|MOD) right=expr
 | left=expr op=(ADD|SUB) right=expr
@@ -207,7 +189,9 @@ expr
 | STRING                    
 | TRU
 | callfunc
+| funcembed
 | FAL
 | ID
 | methodvecrtrn
+| NIL
 ;
