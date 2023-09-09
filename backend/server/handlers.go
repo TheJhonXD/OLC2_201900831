@@ -112,12 +112,7 @@ func TreeParse(w http.ResponseWriter, r *http.Request) {
 	grammar := readFile("other/grammar.txt")
 	lexgrammar := readFile("other/lexgrammar.txt")
 	res := &Tree{}
-	/* data := Data{
-		Grammar:    "parser grammar ExprParser;\noptions { tokenVocab=ExprLexer; }\n\nprogram : stat EOF | def EOF;\nstat: ID '=' expr ';' | expr ';';\ndef : ID '(' ID (',' ID)* ')' '{' stat* '}' ;\nexpr: ID | INT | func | 'not' expr | expr 'and' expr | expr 'or' expr;\nfunc : ID '(' expr (',' expr)* ')' ;",
-		Lexgrammar: "lexer grammar ExprLexer;\nAND : 'and' ;\nOR : 'or' ;\nNOT : 'not' ;\nEQ : '=' ;\nCOMMA : ',' ;\nSEMI : ';' ;\nLPAREN : '(' ;\nRPAREN : ')' ;\nLCURLY : '{' ;\nRCURLY : '}' ;\nINT : [0-9]+ ;\nID: [a-zA-Z_][a-zA-Z_0-9]* ;\nWS: [ \\t\\n\\r\\f]+ -> skip ;",
-		Input:      "f(x,y) {\n  a = 3;\n  x and y;\n}",
-		Start:      "program",
-	} */
+
 	data := Data{
 		Grammar:    grammar,
 		Lexgrammar: lexgrammar,
