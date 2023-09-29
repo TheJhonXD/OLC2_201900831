@@ -1,0 +1,197 @@
+grammar SwiftGrammar; 
+
+options {
+  tokenVocab = SwiftLexer;
+}
+
+s
+: block EOF
+;
+
+block
+: ins+=instruction+
+;
+
+instruction 
+: printstmt
+| callfuncinstruction
+| ifstmt
+| varstmt
+| varasgmt
+| conststmt
+| switchstmt
+| whilestmt
+| forstmt
+| guardstmt
+| transferstmt
+| vectorstmt
+| methodvec
+| vecaccess
+| funcstmt
+;
+printstmt
+: PRINT PARIZQ printexprlist PARDER
+;
+
+printexprlist
+: expr COMA
+| expr
+;
+
+ifstmt
+: IF expr LLAVEIZQ block LLAVEDER
+| IF expr LLAVEIZQ firstBlk=block LLAVEDER elif+=elseifstmt+ elsestmt
+| IF expr LLAVEIZQ firstBlk=block LLAVEDER elif+=elseifstmt+
+| IF expr LLAVEIZQ firstBlk=block LLAVEDER elsestmt
+;
+
+elseifstmt
+: ELSE IF expr LLAVEIZQ block LLAVEDER
+;
+elsestmt
+: ELSE LLAVEIZQ block LLAVEDER
+;
+varstmt
+: VAR ID COLON tipo IG expr
+| VAR ID IG expr            
+| VAR ID COLON tipo Q_MARK 
+;
+
+tipo
+:INT
+|FLOAT
+|STR 
+|BOOL 
+|CHARACTER 
+;
+
+varasgmt
+: ID IG expr
+| ID ADD IG expr
+| ID SUB IG expr
+;
+
+conststmt
+: LET ID IG expr
+| LET ID COLON tipo IG expr
+;
+
+switchstmt
+: SWITCH expr LLAVEIZQ casesvar+=casestmt+ defaultstmt? LLAVEDER
+;
+
+casestmt
+: CASE expr COLON block BREAK?
+;
+
+defaultstmt
+: DEFAULT COLON block BREAK?
+;
+
+whilestmt
+: WHILE expr LLAVEIZQ block LLAVEDER
+;
+
+forstmt
+: FOR ID IN STRING LLAVEIZQ block LLAVEDER
+| FOR ID IN left=expr RANGEPTS right=expr LLAVEIZQ block LLAVEDER
+| FOR first=ID IN second=ID LLAVEIZQ block LLAVEDER
+;
+
+guardstmt
+: GUARD expr ELSE LLAVEIZQ block LLAVEDER
+;
+
+transferstmt
+: BREAK
+| CONTINUE
+| RETURN
+| RETURN expr
+;
+
+vectorstmt
+: VAR ID COLON CORCHIZQ tipo CORCHDER definestmt
+;
+
+definestmt
+: IG CORCHIZQ lista += listexpr+ CORCHDER
+| IG CORCHIZQ CORCHDER
+;
+
+listexpr
+: expr COMA
+| expr
+;
+
+methodvec
+: ID PUNTO APPEND PARIZQ expr PARDER 
+| ID PUNTO REMOVELAST PARIZQ PARDER 
+| ID PUNTO REMOVE PARIZQ expr PARDER 
+;
+
+methodvecrtrn
+: ID PUNTO EMPTY 
+| ID PUNTO COUNT 
+| ID CORCHIZQ expr CORCHDER
+;
+
+vecaccess
+: firstId=ID CORCHIZQ first=expr CORCHDER IG secondId=ID CORCHIZQ second=expr CORCHDER
+| ID CORCHIZQ first=expr CORCHDER IG second=expr
+;
+
+funcstmt
+: FUNC ID PARIZQ lista+=listparam+ PARDER ARROW tipo LLAVEIZQ block LLAVEDER
+| FUNC ID PARIZQ lista+=listparam+ PARDER LLAVEIZQ block LLAVEDER
+| FUNC ID PARIZQ PARDER ARROW tipo LLAVEIZQ block LLAVEDER
+| FUNC ID PARIZQ PARDER LLAVEIZQ block LLAVEDER
+;
+
+listparam
+: extr=(ID | CAME )? inter=ID COLON INOUT? tipo COMA
+| extr=(ID | CAME )? inter=ID COLON INOUT? tipo
+;
+
+callfunc
+: ID PARIZQ lista+=listparamcall+ PARDER
+| ID PARIZQ PARDER
+;
+
+callfuncinstruction
+: ID PARIZQ lista+=listparamcall+ PARDER
+| ID PARIZQ PARDER
+;
+
+listparamcall
+: (ID COLON)? AMP? expr COMA
+| (ID COLON)? AMP? expr
+;
+
+funcembed
+: STR PARIZQ expr PARDER
+| INT PARIZQ expr PARDER
+| FLOAT PARIZQ expr PARDER
+;
+
+
+expr
+: op=SUB right=expr
+| left=expr op=(MUL|DIV|MOD) right=expr
+| left=expr op=(ADD|SUB) right=expr
+| left=expr op=(MAY_IG|MAYOR) right=expr
+| left=expr op=(MEN_IG|MENOR) right=expr
+| left=expr op=(IG_IG|DIF) right=expr
+| left=expr AND right=expr
+| left=expr OR right=expr
+| PARIZQ expr PARDER
+| NUMBER                             
+| CHAR
+| STRING                    
+| TRU
+| callfunc
+| funcembed
+| FAL
+| ID
+| methodvecrtrn
+| NIL
+;
