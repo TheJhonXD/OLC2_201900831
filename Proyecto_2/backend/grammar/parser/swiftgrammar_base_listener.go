@@ -170,6 +170,18 @@ func (s *BaseSwiftGrammarListener) EnterVecaccess(ctx *VecaccessContext) {}
 // ExitVecaccess is called when production vecaccess is exited.
 func (s *BaseSwiftGrammarListener) ExitVecaccess(ctx *VecaccessContext) {}
 
+// EnterStructstmt is called when production structstmt is entered.
+func (s *BaseSwiftGrammarListener) EnterStructstmt(ctx *StructstmtContext) {}
+
+// ExitStructstmt is called when production structstmt is exited.
+func (s *BaseSwiftGrammarListener) ExitStructstmt(ctx *StructstmtContext) {}
+
+// EnterStructattrlist is called when production structattrlist is entered.
+func (s *BaseSwiftGrammarListener) EnterStructattrlist(ctx *StructattrlistContext) {}
+
+// ExitStructattrlist is called when production structattrlist is exited.
+func (s *BaseSwiftGrammarListener) ExitStructattrlist(ctx *StructattrlistContext) {}
+
 // EnterFuncstmt is called when production funcstmt is entered.
 func (s *BaseSwiftGrammarListener) EnterFuncstmt(ctx *FuncstmtContext) {}
 

@@ -253,6 +253,42 @@ vecaccess returns [interfaces.Instruction vecacc]
 ;
 
 
+//* Declaración de matrices
+/* tipomatrix 
+: CORCHIZQ tipomatrix CORCHIZQ
+| tipo
+;
+
+defmatrix 
+: listvalmatrix
+simplematrix
+;
+
+listvalmatrix
+: listvalmatrix2
+;
+
+listvalmatrix2
+: listvalmatrix2 COMA listvalmatrix
+| listvalmatrix
+| listexpr
+;
+
+simplematrix
+: tipomatrix PARIZQ simplematrix COMA NUMBER PARDER
+| tipomatrix PARIZQ expr COMA simplematrix PARDER
+; */
+
+//* Declaración de Structs
+structstmt
+: STRUCT ID LLAVEIZQ list+=structattrlist+ LLAVEDER
+;
+
+structattrlist 
+: (LET | VAR) ID (: tipo)? (IG expr)?
+;
+
+
 //* Funciones
 funcstmt returns [interfaces.Instruction funcinstr]
 @init{

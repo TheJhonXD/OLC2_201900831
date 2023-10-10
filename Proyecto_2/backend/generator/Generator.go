@@ -3,16 +3,17 @@ package generator
 import "fmt"
 
 type Generator struct {
-	Tmp           int
-	Label         int
-	Code          []interface{}
-	FinalCode     []interface{}
-	Natives       []interface{}
-	FuncCode      []interface{}
-	TmpList       []interface{}
-	BreakLabel    string
-	ContinueLabel string
-	MainCode      bool
+	Tmp             int
+	Label           int
+	Code            []interface{}
+	FinalCode       []interface{}
+	Natives         []interface{}
+	FuncCode        []interface{}
+	TmpList         []interface{}
+	PrintStringFlag bool
+	BreakLabel      string
+	ContinueLabel   string
+	MainCode        bool
 }
 
 func NewGenerator() Generator {
@@ -31,6 +32,10 @@ func (g *Generator) GetCode() []interface{} {
 
 func (g *Generator) GetFinalCode() []interface{} {
 	return g.FinalCode
+}
+
+func (g *Generator) GetTmps() []interface{} {
+	return g.TmpList
 }
 
 // Add break label
@@ -108,6 +113,46 @@ func (g *Generator) AddPrintf(typePrint string, value string) {
 	}
 }
 
+func (g *Generator) AddSetHeap(index string, value string) {
+	if g.MainCode {
+		g.Code = append(g.Code, "heap["+index+"] = "+value+";\n")
+	} else {
+		g.FuncCode = append(g.FuncCode, "heap["+index+"] = "+value+";\n")
+	}
+}
+
+func (g *Generator) AddGetHeap(target string, index string) {
+	if g.MainCode {
+		g.Code = append(g.Code, target+" = heap["+index+"];\n")
+	} else {
+		g.FuncCode = append(g.FuncCode, target+" = heap["+index+"];\n")
+	}
+}
+
+func (g *Generator) AddSetStack(index string, value string) {
+	if g.MainCode {
+		g.Code = append(g.Code, "stack["+index+"] = "+value+";\n")
+	} else {
+		g.FuncCode = append(g.FuncCode, "stack["+index+"] = "+value+";\n")
+	}
+}
+
+func (g *Generator) AddGetStack(target string, index string) {
+	if g.MainCode {
+		g.Code = append(g.Code, target+" = stack["+index+"];\n")
+	} else {
+		g.FuncCode = append(g.FuncCode, target+" = stack["+index+"];\n")
+	}
+}
+
+func (g *Generator) AddCall(target string) {
+	if g.MainCode {
+		g.Code = append(g.Code, target+"();\n")
+	} else {
+		g.FuncCode = append(g.FuncCode, target+"();\n")
+	}
+}
+
 func (g *Generator) AddBr() {
 	if g.MainCode {
 		g.Code = append(g.Code, "\n")
@@ -121,5 +166,78 @@ func (g *Generator) AddComment(target string) {
 		g.Code = append(g.Code, "//"+target+"\n")
 	} else {
 		g.FuncCode = append(g.FuncCode, "//"+target+"\n")
+	}
+}
+
+func (g *Generator) GenerateFinalCode() {
+	/* ********** HEADER ********** */
+	g.FinalCode = append(g.FinalCode, "#include <stdio.h>\n")
+	g.FinalCode = append(g.FinalCode, "#include <math.h>\n")
+	g.FinalCode = append(g.FinalCode, "double heap[30101999];\n")
+	g.FinalCode = append(g.FinalCode, "double stack[30101999];\n")
+	g.FinalCode = append(g.FinalCode, "double P;\n")
+	g.FinalCode = append(g.FinalCode, "double H;\n")
+
+	/* ********** TEMPORAL DECLARATION ********** */
+	tmpList := g.GetTmps()
+	if len(tmpList) > 0 {
+		g.FinalCode = append(g.FinalCode, "double ")
+		tmpDec := fmt.Sprintf("%v", tmpList[0])
+		tmpList = tmpList[1:]
+		for _, tmp := range tmpList {
+			tmpDec += ", " + fmt.Sprintf("%v", tmp)
+		}
+		tmpDec += ";\n\n"
+		g.FinalCode = append(g.FinalCode, tmpDec)
+	}
+
+	/* ********** NATIVE FUNCTIONS ********** */
+	if len(g.Natives) > 0 {
+		g.FinalCode = append(g.FinalCode, "/*------NATIVES------*/\n")
+		for _, s := range g.Natives {
+			g.FinalCode = append(g.FinalCode, s)
+		}
+	}
+
+	/* ********** FUNCTIONS ********** */
+	if len(g.FuncCode) > 0 {
+		g.FinalCode = append(g.FinalCode, "/*------FUNCTIONS------*/\n")
+		for _, s := range g.FuncCode {
+			g.FinalCode = append(g.FinalCode, s)
+		}
+	}
+
+	/* ********** MAIN ********** */
+	g.FinalCode = append(g.FinalCode, "/*------MAIN------*/\n")
+	g.FinalCode = append(g.FinalCode, "void main() {\n")
+	g.FinalCode = append(g.FinalCode, "\tP = 0; H = 0;\n\n")
+	for _, s := range g.Code {
+		g.FinalCode = append(g.FinalCode, "\t"+s.(string))
+	}
+	g.FinalCode = append(g.FinalCode, "\n\treturn;\n}\n")
+}
+
+func (g *Generator) GeneratePrintString() {
+	if g.PrintStringFlag {
+		// Generando temporales y etiquetas
+		newTmp1 := g.NewTmp()
+		newTmp2 := g.NewTmp()
+		newTmp3 := g.NewTmp()
+		newLbl1 := g.NewLabel()
+		newLbl2 := g.NewLabel()
+		// Se genera la funcion printstring
+		g.Natives = append(g.Natives, "void dbrust_printString() {\n")
+		g.Natives = append(g.Natives, "\t"+newTmp1+" = P + 1;\n")
+		g.Natives = append(g.Natives, "\t"+newTmp2+" = stack[(int)"+newTmp1+"];\n")
+		g.Natives = append(g.Natives, "\t"+newLbl2+":\n")
+		g.Natives = append(g.Natives, "\t"+newTmp3+" = heap[(int)"+newTmp2+"];\n")
+		g.Natives = append(g.Natives, "\tif("+newTmp3+" == -1) goto "+newLbl1+";\n")
+		g.Natives = append(g.Natives, "\tprintf(\"%c\", (char)"+newTmp3+");\n")
+		g.Natives = append(g.Natives, "\t"+newTmp2+" = "+newTmp2+" + 1;\n")
+		g.Natives = append(g.Natives, "\tgoto "+newLbl2+";\n")
+		g.Natives = append(g.Natives, "\t"+newLbl1+":\n")
+		g.Natives = append(g.Natives, "\treturn;\n")
+		g.Natives = append(g.Natives, "}\n\n")
+		g.PrintStringFlag = false
 	}
 }

@@ -77,7 +77,6 @@ func InputOutput(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response.Message, response.Error, response.Symbol = analyzer(request.Code)
-	// fmt.Println(aux)
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)

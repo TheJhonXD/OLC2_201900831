@@ -1,7 +1,10 @@
 package interfaces
 
-import "Server/environment"
+import (
+	"Server/environment"
+	"Server/generator"
+)
 
 type Expression interface {
-	Ejecutar(ast *environment.AST, env interface{}) environment.Symbol
+	Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) environment.Value
 }

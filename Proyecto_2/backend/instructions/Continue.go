@@ -2,6 +2,7 @@ package instructions
 
 import (
 	"Server/environment"
+	"Server/generator"
 )
 
 type Continue struct {
@@ -13,12 +14,6 @@ func NewContinue(line int, col int) Continue {
 	return Continue{line, col}
 }
 
-func (c Continue) Ejecutar(ast *environment.AST, env interface{}) interface{} {
-	var result environment.Symbol
-	if env.(environment.Env).IsLoop() {
-		result = environment.Symbol{Line: c.Line, Col: c.Col, Type: environment.NULL, Value: 0, ContinueFlag: true}
-	} else {
-		ast.AddError(c.Line, c.Col, env.(environment.Env).Id, "Continue fuera de un ciclo")
-	}
-	return result
+func (c Continue) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
+	return environment.Value{}
 }

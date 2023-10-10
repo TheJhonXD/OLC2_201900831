@@ -10,10 +10,11 @@ type Env struct {
 	FuncTable   map[string]SymbolFunc
 	Prev        interface{}
 	Id          string
+	Size        map[string]int
 }
 
 func NewEnv(prev interface{}, ide string) Env {
-	return Env{SymbolTable: make(map[string]Symbol), FuncTable: make(map[string]SymbolFunc), Prev: prev, Id: ide}
+	return Env{SymbolTable: make(map[string]Symbol), FuncTable: make(map[string]SymbolFunc), Prev: prev, Id: ide, Size: make(map[string]int)}
 }
 
 func (env Env) SaveVar(id string, value Symbol) bool {

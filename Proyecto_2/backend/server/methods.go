@@ -2,6 +2,7 @@ package server
 
 import (
 	"Server/environment"
+	"Server/generator"
 	"Server/grammar/parser"
 	"Server/interfaces"
 
@@ -39,10 +40,18 @@ func analyzer(code string) (string, []environment.Error_, []environment.SymbolT)
 	var Ast environment.AST
 	//create environment
 	env := environment.NewEnv(nil, "GLOBAL")
+	//create Generator
+	gen := generator.NewGenerator()
+	gen.MainCode = true
 	//ejecución del codigo
 	for _, inst := range Code {
 		// fmt.Println(reflect.TypeOf(inst))
-		inst.(interfaces.Instruction).Ejecutar(&Ast, env)
+		inst.(interfaces.Instruction).Ejecutar(&Ast, env, &gen)
 	}
-	return Ast.GetPrint(), Ast.GetErrorsAux(), Ast.GetSymbolTable()
+	consoleOut := ""
+	gen.GenerateFinalCode()
+	for _, item := range gen.GetFinalCode() {
+		consoleOut += item.(string)
+	}
+	return consoleOut, Ast.GetErrorsAux(), Ast.GetSymbolTable()
 }

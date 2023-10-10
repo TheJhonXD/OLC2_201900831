@@ -82,6 +82,12 @@ type SwiftGrammarListener interface {
 	// EnterVecaccess is called when entering the vecaccess production.
 	EnterVecaccess(c *VecaccessContext)
 
+	// EnterStructstmt is called when entering the structstmt production.
+	EnterStructstmt(c *StructstmtContext)
+
+	// EnterStructattrlist is called when entering the structattrlist production.
+	EnterStructattrlist(c *StructattrlistContext)
+
 	// EnterFuncstmt is called when entering the funcstmt production.
 	EnterFuncstmt(c *FuncstmtContext)
 
@@ -177,6 +183,12 @@ type SwiftGrammarListener interface {
 
 	// ExitVecaccess is called when exiting the vecaccess production.
 	ExitVecaccess(c *VecaccessContext)
+
+	// ExitStructstmt is called when exiting the structstmt production.
+	ExitStructstmt(c *StructstmtContext)
+
+	// ExitStructattrlist is called when exiting the structattrlist production.
+	ExitStructattrlist(c *StructattrlistContext)
 
 	// ExitFuncstmt is called when exiting the funcstmt production.
 	ExitFuncstmt(c *FuncstmtContext)
