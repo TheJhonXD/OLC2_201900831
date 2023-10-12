@@ -3,6 +3,8 @@ package instructions
 import (
 	"Server/environment"
 	"Server/generator"
+	"Server/interfaces"
+	"strconv"
 )
 
 type ASSIGMENT struct {
@@ -29,7 +31,16 @@ func NewOpAsgmt(line int, col int, ide string, val interface{}, Op string) OPASS
 }
 
 func (a ASSIGMENT) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
-	return environment.Value{}
+	var result environment.Value
+	gen.AddComment("Generando asignacion")
+	//buscando variable en entorno
+	variable := env.(environment.Env).GetVar(a.Id)
+	//ejecutando valor
+	result = a.Value.(interfaces.Expression).Ejecutar(ast, env, gen)
+	//realizando asignacion
+	gen.AddSetStack(strconv.Itoa(variable.Pos), result.Value)
+	gen.AddBr()
+	return result
 }
 
 func (o OPASSIGMENT) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {

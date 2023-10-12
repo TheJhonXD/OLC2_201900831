@@ -17,13 +17,14 @@ func NewEnv(prev interface{}, ide string) Env {
 	return Env{SymbolTable: make(map[string]Symbol), FuncTable: make(map[string]SymbolFunc), Prev: prev, Id: ide, Size: make(map[string]int)}
 }
 
-func (env Env) SaveVar(id string, value Symbol) bool {
+func (env Env) SaveVar(id string, tipo TipoExpresion) Symbol {
 	if variable, ok := env.SymbolTable[id]; ok {
 		fmt.Println("Error: La variable \""+id+"\" ya existe, con valor: ", variable.Value)
-		return false
+		return env.SymbolTable[id]
 	}
-	env.SymbolTable[id] = value
-	return true
+	env.SymbolTable[id] = Symbol{Line: 0, Col: 0, Type: tipo, Pos: env.Size["size"]}
+	env.Size["size"] = env.Size["size"] + 1
+	return env.SymbolTable[id]
 }
 
 func (env Env) GetVar(id string) Symbol {

@@ -53,8 +53,6 @@ func (p Print) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Ge
 			gen.AddBr()
 		} else if result.Type == environment.STRING {
 			fmt.Println("Imprimir string")
-			//llamar a generar printstring
-			gen.GeneratePrintString()
 			//agregar codigo en el main
 			newTemp1 := gen.NewTmp()
 			newTemp2 := gen.NewTmp()

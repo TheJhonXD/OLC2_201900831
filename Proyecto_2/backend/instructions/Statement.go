@@ -3,6 +3,9 @@ package instructions
 import (
 	"Server/environment"
 	"Server/generator"
+	"Server/interfaces"
+	"fmt"
+	"strconv"
 )
 
 type Statement struct {
@@ -19,5 +22,37 @@ func NewStmt(line int, col int, name string, tipo environment.TipoExpresion, val
 }
 
 func (v Statement) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
-	return environment.Value{}
+	var result environment.Value
+	var newVar environment.Symbol
+	result = v.Value.(interfaces.Expression).Ejecutar(ast, env, gen)
+	gen.AddComment("Agregando una declaracion")
+	fmt.Println("Agregando una declaracion")
+	//Agregando el tipo de variable
+	v.Type = result.Type
+	newVar = env.(environment.Env).SaveVar(v.Name, v.Type)
+
+	if result.Type == environment.BOOLEAN {
+		//si no es temp (boolean)
+		newLabel := gen.NewLabel()
+		//add labels
+		for _, lvl := range result.TrueLabel {
+			gen.AddLabel(lvl.(string))
+		}
+		gen.AddSetStack(strconv.Itoa(newVar.Pos), "1")
+		gen.AddGoto(newLabel)
+		//add labels
+		for _, lvl := range result.FalseLabel {
+			gen.AddLabel(lvl.(string))
+		}
+		gen.AddSetStack(strconv.Itoa(newVar.Pos), "0")
+		gen.AddGoto(newLabel)
+		gen.AddLabel(newLabel)
+		gen.AddBr()
+	} else {
+		//si es temp (num,string,etc)
+		gen.AddSetStack(strconv.Itoa(newVar.Pos), result.Value)
+		gen.AddBr()
+	}
+
+	return result
 }

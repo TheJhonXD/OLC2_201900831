@@ -178,6 +178,10 @@ func (g *Generator) GenerateFinalCode() {
 	g.FinalCode = append(g.FinalCode, "double P;\n")
 	g.FinalCode = append(g.FinalCode, "double H;\n")
 
+	/* ********** FUNCTION DECLARATION ********** */
+	g.PrintStringFlag = true
+	g.GeneratePrintString()
+
 	/* ********** TEMPORAL DECLARATION ********** */
 	tmpList := g.GetTmps()
 	if len(tmpList) > 0 {

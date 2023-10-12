@@ -35,7 +35,7 @@ func (p Primitive) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 		for _, asc := range byteArray {
 			// Se agrega ascii al heap
 			gen.AddSetHeap("(int)H", strconv.Itoa(int(asc)))
-			// Suma heap pointer
+			// Suma 1 al heap pointer
 			gen.AddExpression("H", "H", "1", "+")
 		}
 		// Caracteres de escape
