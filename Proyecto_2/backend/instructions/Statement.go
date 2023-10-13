@@ -28,8 +28,14 @@ func (v Statement) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 	gen.AddComment("Agregando una declaracion")
 	fmt.Println("Agregando una declaracion")
 	//Agregando el tipo de variable
-	v.Type = result.Type
-	newVar = env.(environment.Env).SaveVar(v.Name, v.Type)
+	if v.Type == environment.NULL {
+		v.Type = result.Type
+	} else if v.Type != result.Type {
+		ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "Los tipos no coinciden")
+		return result
+	}
+
+	newVar = env.(environment.Env).SaveVar(v.Name, v.Type, v.Const)
 
 	if result.Type == environment.BOOLEAN {
 		//si no es temp (boolean)

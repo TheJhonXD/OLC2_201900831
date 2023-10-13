@@ -22,8 +22,14 @@ func (v Variable) Ejecutar(ast *environment.AST, env interface{}, gen *generator
 	fmt.Println("Llamando variable")
 	var result environment.Value
 	retSym := env.(environment.Env).GetVar(v.Id)
+
+	if retSym.Type == environment.NULL {
+		ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "La variable \""+v.Id+"\" no existe")
+		return result
+	}
 	newTemp := gen.NewTmp()
 	newTemp2 := gen.NewTmp()
+
 	if gen.MainCode {
 		gen.AddGetStack(newTemp2, strconv.Itoa(retSym.Pos))
 	} else {
