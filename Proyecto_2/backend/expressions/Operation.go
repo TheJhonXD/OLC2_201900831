@@ -158,10 +158,8 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 		}
 	case "%":
 		{
-			//! Al parecer no permite aplicar modulo
 			op1 = o.Op_izq.Ejecutar(ast, env, gen)
 			op2 = o.Op_der.Ejecutar(ast, env, gen)
-
 			dominante = mod_table[op1.Type][op2.Type]
 			if dominante == environment.INTEGER {
 				lvl1 := gen.NewLabel()
@@ -180,9 +178,13 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 				gen.AddExpression(newTmp, "0", "", "")
 				gen.AddGoto(lvl2)
 				gen.AddLabel(lvl1)
-				gen.AddExpression(newTmp, op1.Value, op2.Value, "%")
+				gen.AddExpression(newTmp, op1.Value, op2.Value, "/")
+				newTmp2 := gen.NewTmp()
+				gen.AddExpression(newTmp2, "(int)"+newTmp, op2.Value, "*")
+				newTmp3 := gen.NewTmp()
+				gen.AddExpression(newTmp3, op1.Value, newTmp2, "-")
 				gen.AddLabel(lvl2)
-				result = environment.NewValue(newTmp, true, dominante)
+				result = environment.NewValue(newTmp3, true, dominante)
 				return result
 			} else {
 				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible aplicar modulo")

@@ -24,7 +24,7 @@ func (p Print) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Ge
 		result = val.(interfaces.Expression).Ejecutar(ast, env, gen)
 		if result.Type == environment.INTEGER || result.Type == environment.FLOAT {
 			gen.AddPrintf("d", "(int)"+fmt.Sprintf("%v", result.Value))
-			gen.AddPrintf("c", "10")
+			// gen.AddPrintf("c", "10")
 			gen.AddBr()
 		} else if result.Type == environment.BOOLEAN {
 			if result.IsTmp {
@@ -49,7 +49,7 @@ func (p Print) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Ge
 			gen.AddPrintf("c", "(char)115")
 			gen.AddPrintf("c", "(char)101")
 			gen.AddLabel(newLabel)
-			gen.AddPrintf("c", "10")
+			// gen.AddPrintf("c", "10")
 			gen.AddBr()
 		} else if result.Type == environment.STRING {
 			fmt.Println("Imprimir string")
@@ -64,9 +64,13 @@ func (p Print) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Ge
 			gen.AddCall("dbrust_printString")               //Llamada
 			gen.AddGetStack(newTemp2, "(int)P")             //obtencion retorno
 			gen.AddExpression("P", "P", size, "-")          //regreso del entorno
-			gen.AddPrintf("c", "10")                        //salto de linea
+			// gen.AddPrintf("c", "10")                        //salto de linea
 			gen.AddBr()
 		}
+		// Añado un espacio entre cada parametro a imprimir
+		gen.AddPrintf("c", "32")
 	}
+	// Añado un salto de linea al final del print
+	gen.AddPrintf("c", "10")
 	return result
 }
