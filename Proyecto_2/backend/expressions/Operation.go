@@ -4,6 +4,7 @@ import (
 	"Server/environment"
 	"Server/generator"
 	"Server/interfaces"
+	"fmt"
 )
 
 type Operation struct {
@@ -157,6 +158,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 		}
 	case "%":
 		{
+			//! Al parecer no permite aplicar modulo
 			op1 = o.Op_izq.Ejecutar(ast, env, gen)
 			op2 = o.Op_der.Ejecutar(ast, env, gen)
 
@@ -225,6 +227,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 		}
 	case ">":
 		{
+			fmt.Println("jsjsjs")
 			op1 = o.Op_izq.Ejecutar(ast, env, gen)
 			op2 = o.Op_der.Ejecutar(ast, env, gen)
 
@@ -341,9 +344,10 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 			}
 			op2 = o.Op_der.Ejecutar(ast, env, gen)
 			result = environment.NewValue("", false, environment.BOOLEAN)
-			result.TrueLabel = append(op2.TrueLabel, result.TrueLabel)
-			result.FalseLabel = append(op1.FalseLabel, result.FalseLabel)
-			result.FalseLabel = append(op2.FalseLabel, result.FalseLabel)
+			fmt.Println("op1: ", op1.FalseLabel, " op2: ", op2.FalseLabel)
+			result.TrueLabel = append(result.TrueLabel, op2.TrueLabel...)
+			result.FalseLabel = append(result.FalseLabel, op1.FalseLabel...)
+			result.FalseLabel = append(result.FalseLabel, op2.FalseLabel...)
 			return result
 		}
 	case "||":
@@ -355,9 +359,9 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 			}
 			op2 = o.Op_der.Ejecutar(ast, env, gen)
 			result = environment.NewValue("", false, environment.BOOLEAN)
-			result.TrueLabel = append(op1.TrueLabel, result.TrueLabel)
-			result.TrueLabel = append(op2.TrueLabel, result.TrueLabel)
-			result.FalseLabel = append(op2.FalseLabel, result.FalseLabel)
+			result.TrueLabel = append(result.TrueLabel, op1.TrueLabel...)
+			result.TrueLabel = append(result.TrueLabel, op2.TrueLabel...)
+			result.FalseLabel = append(result.FalseLabel, op2.FalseLabel...)
 			return result
 		}
 	case "!":
@@ -365,8 +369,8 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 			op1 = o.Op_izq.Ejecutar(ast, env, gen)
 			if op1.Type == environment.BOOLEAN {
 				result = environment.NewValue("", false, environment.BOOLEAN)
-				result.TrueLabel = append(op1.FalseLabel, result.TrueLabel)
-				result.FalseLabel = append(op1.TrueLabel, result.FalseLabel)
+				result.TrueLabel = append(result.TrueLabel, op1.FalseLabel...)
+				result.FalseLabel = append(result.FalseLabel, op1.TrueLabel...)
 				return result
 			} else {
 				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible aplicar negacion logica")

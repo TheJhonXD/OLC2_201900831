@@ -213,12 +213,12 @@ func (g *Generator) GenerateFinalCode() {
 
 	/* ********** MAIN ********** */
 	g.FinalCode = append(g.FinalCode, "/*------MAIN------*/\n")
-	g.FinalCode = append(g.FinalCode, "void main() {\n")
+	g.FinalCode = append(g.FinalCode, "int main() {\n")
 	g.FinalCode = append(g.FinalCode, "\tP = 0; H = 0;\n\n")
 	for _, s := range g.Code {
 		g.FinalCode = append(g.FinalCode, "\t"+s.(string))
 	}
-	g.FinalCode = append(g.FinalCode, "\n\treturn;\n}\n")
+	g.FinalCode = append(g.FinalCode, "\n\treturn 0;\n}\n")
 }
 
 func (g *Generator) GeneratePrintString() {
@@ -240,7 +240,7 @@ func (g *Generator) GeneratePrintString() {
 		g.Natives = append(g.Natives, "\t"+newTmp2+" = "+newTmp2+" + 1;\n")
 		g.Natives = append(g.Natives, "\tgoto "+newLbl2+";\n")
 		g.Natives = append(g.Natives, "\t"+newLbl1+":\n")
-		g.Natives = append(g.Natives, "\treturn;\n")
+		// g.Natives = append(g.Natives, "\treturn;\n")
 		g.Natives = append(g.Natives, "}\n\n")
 		g.PrintStringFlag = false
 	}

@@ -68,5 +68,5 @@ func (p Print) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Ge
 			gen.AddBr()
 		}
 	}
-	return nil
+	return result
 }
