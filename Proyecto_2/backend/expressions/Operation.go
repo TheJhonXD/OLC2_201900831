@@ -197,7 +197,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 			op2 = o.Op_der.Ejecutar(ast, env, gen)
 
 			if op1.Type == environment.INTEGER || op1.Type == environment.FLOAT {
-				gen.AddExpression(newTmp, op1.Value, op2.Value, "-")
+				gen.AddExpression(newTmp, op1.Value, op2.Value, "*")
 				result = environment.NewValue(newTmp, true, dominante)
 				result.IntValue = 0 - op1.IntValue
 				return result

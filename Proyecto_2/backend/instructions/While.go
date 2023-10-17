@@ -4,6 +4,7 @@ import (
 	"Server/environment"
 	"Server/generator"
 	"Server/interfaces"
+	"fmt"
 )
 
 type While struct {
@@ -18,5 +19,35 @@ func NewWhile(line int, col int, expression interfaces.Expression, instructions 
 }
 
 func (w While) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
-	return environment.Value{}
+	gen.AddComment("Generacion While")
+	fmt.Println("Generacion While")
+	var condition environment.Value
+	var result environment.Value
+
+	init := gen.NewLabel()
+	gen.AddLabel(init)
+	condition = w.Expression.Ejecutar(ast, env, gen)
+	// Condicion verdadera
+	for _, lbl := range condition.TrueLabel {
+		gen.AddLabel(lbl.(string))
+		for _, inst := range w.Instructions {
+			result = inst.(interfaces.Instruction).Ejecutar(ast, env, gen).(environment.Value)
+			if result.BreakFlag {
+				break
+			}
+			if result.ContinueFlag {
+				break
+			}
+			if result.ReturnFlag {
+				return result
+			}
+		}
+		gen.AddGoto(init)
+	}
+	// Condicion falsa
+	// gen.AddLabel(condition.FalseLabel[len(condition.FalseLabel)-1].(string))
+	for _, lbl := range condition.FalseLabel {
+		gen.AddLabel(lbl.(string))
+	}
+	return result
 }
