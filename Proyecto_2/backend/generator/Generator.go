@@ -240,8 +240,25 @@ func (g *Generator) GeneratePrintString() {
 		g.Natives = append(g.Natives, "\t"+newTmp2+" = "+newTmp2+" + 1;\n")
 		g.Natives = append(g.Natives, "\tgoto "+newLbl2+";\n")
 		g.Natives = append(g.Natives, "\t"+newLbl1+":\n")
-		// g.Natives = append(g.Natives, "\treturn;\n")
+		g.Natives = append(g.Natives, "\treturn;\n")
 		g.Natives = append(g.Natives, "}\n\n")
 		g.PrintStringFlag = false
 	}
+}
+
+func (g *Generator) GenerateAssingFor() {
+	// Generando temporales y etiquetas
+	newTmp1 := g.NewTmp()
+	newTmp2 := g.NewTmp()
+	newTmp3 := g.NewTmp()
+	// Se genera la funcion printstring
+	g.Natives = append(g.Natives, "void dbrust_assign() {\n")
+	g.Natives = append(g.Natives, "\t"+newTmp1+" = P + 1;\n")
+	g.Natives = append(g.Natives, "\t"+newTmp2+" = stack[(int)"+newTmp1+"];\n")
+	g.Natives = append(g.Natives, "\t"+newTmp3+" = heap[(int)"+newTmp2+"];\n")
+	//! Aquí debe cambiar
+	g.Natives = append(g.Natives, "\tprintf(\"%c\", (char)"+newTmp3+");\n")
+	g.Natives = append(g.Natives, "\t"+newTmp2+" = "+newTmp2+" + 1;\n")
+	// g.Natives = append(g.Natives, "\treturn;\n")
+	g.Natives = append(g.Natives, "}\n\n")
 }

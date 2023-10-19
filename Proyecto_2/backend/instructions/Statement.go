@@ -34,7 +34,7 @@ func (v Statement) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 		ast.AddError(v.Line, v.Col, env.(environment.Env).Id, "Los tipos no coinciden")
 		return result
 	}
-
+	fmt.Println("VAR: ", result.Value)
 	newVar = env.(environment.Env).SaveVar(v.Name, v.Type, v.Const)
 
 	if result.Type == environment.BOOLEAN {

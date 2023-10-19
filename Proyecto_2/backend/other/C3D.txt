@@ -1,0 +1,8 @@
+void dbrust_assign(){
+    t3 = P + 1;
+	t4 = stack[(int)t3];
+	t5 = heap[(int)t4];
+    //En lugar de imprimir asignar el valor a la variable
+	printf("%c", (char)t5);
+	t4 = t4 + 1;
+}

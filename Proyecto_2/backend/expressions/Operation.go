@@ -88,6 +88,8 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 				result = environment.NewValue(newTmp, true, dominante)
 				result.IntValue = op1.IntValue + op2.IntValue
 				return result
+			} else if dominante == environment.STRING {
+				fmt.Println("Concatenando")
 			} else {
 				ast.AddError(o.Line, o.Col, env.(environment.Env).Id, "No es posible sumar")
 			}

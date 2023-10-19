@@ -52,6 +52,7 @@ func (p Print) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Ge
 			// gen.AddPrintf("c", "10")
 			gen.AddBr()
 		} else if result.Type == environment.STRING {
+			gen.AddComment("Print string")
 			fmt.Println("Imprimir string")
 			//agregar codigo en el main
 			newTemp1 := gen.NewTmp()
@@ -60,10 +61,11 @@ func (p Print) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Ge
 			gen.AddExpression(newTemp1, "P", size, "+")     //nuevo temporal en pos vacia
 			gen.AddExpression(newTemp1, newTemp1, "1", "+") //se deja espacio de retorno
 			gen.AddSetStack("(int)"+newTemp1, result.Value) //se coloca string en parametro que se manda
-			gen.AddExpression("P", "P", size, "+")          // cambio de entorno
-			gen.AddCall("dbrust_printString")               //Llamada
-			gen.AddGetStack(newTemp2, "(int)P")             //obtencion retorno
-			gen.AddExpression("P", "P", size, "-")          //regreso del entorno
+			fmt.Println("Result: ", result.Value)
+			gen.AddExpression("P", "P", size, "+") // cambio de entorno
+			gen.AddCall("dbrust_printString")      //Llamada
+			gen.AddGetStack(newTemp2, "(int)P")    //obtencion retorno
+			gen.AddExpression("P", "P", size, "-") //regreso del entorno
 			// gen.AddPrintf("c", "10")                        //salto de linea
 			gen.AddBr()
 		}
