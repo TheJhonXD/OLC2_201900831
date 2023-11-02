@@ -15,5 +15,7 @@ func NewContinue(line int, col int) Continue {
 }
 
 func (c Continue) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
-	return environment.Value{}
+	var result environment.Value
+	result.ContinueFlag = true
+	return result
 }

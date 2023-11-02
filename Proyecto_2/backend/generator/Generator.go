@@ -14,6 +14,7 @@ type Generator struct {
 	BreakLabel      string
 	ContinueLabel   string
 	MainCode        bool
+	Names           map[string]string
 }
 
 func NewGenerator() Generator {
@@ -23,6 +24,7 @@ func NewGenerator() Generator {
 		BreakLabel:    "",
 		ContinueLabel: "",
 		MainCode:      true,
+		Names:         make(map[string]string),
 	}
 }
 
@@ -36,6 +38,10 @@ func (g *Generator) GetFinalCode() []interface{} {
 
 func (g *Generator) GetTmps() []interface{} {
 	return g.TmpList
+}
+
+func (g *Generator) SetMainFlag(newVal bool) {
+	g.MainCode = newVal
 }
 
 // Add break label
@@ -70,6 +76,15 @@ func (g *Generator) AddLabel(label string) {
 		g.Code = append(g.Code, label+":\n")
 	} else {
 		g.FuncCode = append(g.FuncCode, label+":\n")
+	}
+}
+
+// Add other
+func (g *Generator) AddOther(other string) {
+	if g.MainCode {
+		g.Code = append(g.Code, other+"\n")
+	} else {
+		g.FuncCode = append(g.FuncCode, other+"\n")
 	}
 }
 
@@ -167,6 +182,32 @@ func (g *Generator) AddComment(target string) {
 	} else {
 		g.FuncCode = append(g.FuncCode, "//"+target+"\n")
 	}
+}
+
+func (g *Generator) AddTitle(target string) {
+	if g.MainCode {
+		g.Code = append(g.Code, "void "+target+"() {\n")
+	} else {
+		g.FuncCode = append(g.FuncCode, "void "+target+"() {\n")
+	}
+}
+
+func (g *Generator) AddEnd() {
+	if g.MainCode {
+		g.Code = append(g.Code, "\treturn;\n")
+		g.Code = append(g.Code, "}\n\n")
+	} else {
+		g.FuncCode = append(g.FuncCode, "\treturn;\n")
+		g.FuncCode = append(g.FuncCode, "}\n\n")
+	}
+}
+
+func (g *Generator) AddKeyNValue(key string, value string) {
+	g.Names[key] = value
+}
+
+func (g *Generator) GetKeyNValue(key string) string {
+	return g.Names[key]
 }
 
 func (g *Generator) GenerateFinalCode() {

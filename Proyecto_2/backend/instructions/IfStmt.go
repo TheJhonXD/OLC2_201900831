@@ -36,13 +36,16 @@ func (i If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 		for _, inst := range i.Block {
 			result = inst.(interfaces.Instruction).Ejecutar(ast, ifEnv, gen).(environment.Value)
 			if result.BreakFlag {
-				break
+				gen.AddGoto(gen.BreakLabel)
 			}
 			if result.ContinueFlag {
-				break
+				gen.AddGoto(gen.ContinueLabel)
+				// break
 			}
 			if result.ReturnFlag {
-				return result
+				gen.AddComment("Aui")
+				gen.AddGoto("L0")
+				// return result
 			}
 		}
 		gen.AddGoto(lblOut)
@@ -62,13 +65,15 @@ func (i If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 				for _, inst := range elseifInstr.(If).ElseIf {
 					result = inst.(interfaces.Instruction).Ejecutar(ast, elseifEnv, gen).(environment.Value)
 					if result.BreakFlag {
-						break
+						gen.AddGoto(gen.BreakLabel)
+						// break
 					}
 					if result.ContinueFlag {
-						break
+						gen.AddGoto(gen.ContinueLabel)
+						// break
 					}
 					if result.ReturnFlag {
-						return result
+						// return result
 					}
 				}
 				gen.AddGoto(lblOut)
@@ -95,7 +100,7 @@ func (i If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 			break
 		}
 		if result.ReturnFlag {
-			return result
+			// return result
 		}
 	}
 	for _, lbl := range condition.FalseLabel[:len(condition.FalseLabel)-1] {

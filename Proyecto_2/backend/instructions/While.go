@@ -28,15 +28,14 @@ func (w While) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Ge
 	gen.AddLabel(init)
 	condition = w.Expression.Ejecutar(ast, env, gen)
 	// Condicion verdadera
+	gen.AddContinueLabel(init)
+	gen.AddBreakLabel(condition.FalseLabel[0].(string))
 	for _, lbl := range condition.TrueLabel {
 		gen.AddLabel(lbl.(string))
 		for _, inst := range w.Instructions {
 			result = inst.(interfaces.Instruction).Ejecutar(ast, env, gen).(environment.Value)
 			if result.BreakFlag {
-				break
-			}
-			if result.ContinueFlag {
-				break
+				// break
 			}
 			if result.ReturnFlag {
 				return result

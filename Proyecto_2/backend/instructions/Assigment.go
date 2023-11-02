@@ -44,6 +44,7 @@ func (a ASSIGMENT) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 		// Comprobando si es constante
 		if !variable.Const {
 			// Realizando asignacion
+			fmt.Println("Entro aqui")
 			gen.AddSetStack(strconv.Itoa(variable.Pos), result.Value)
 			gen.AddBr()
 		} else {

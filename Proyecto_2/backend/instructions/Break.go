@@ -15,5 +15,7 @@ func NewBreak(line int, col int) Break {
 }
 
 func (b Break) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
-	return environment.Value{}
+	var result environment.Value
+	result.BreakFlag = true
+	return result
 }

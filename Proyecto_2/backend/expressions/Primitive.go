@@ -19,12 +19,14 @@ func NewPrimitive(line int, col int, val interface{}, tipo environment.TipoExpre
 }
 
 func (p Primitive) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) environment.Value {
+	fmt.Println("Primitivo")
 	var result environment.Value
 	if p.Type == environment.INTEGER {
 		result = environment.NewValue(fmt.Sprintf("%v", p.Val), false, p.Type)
 		result.IntValue = p.Val.(int)
 	} else if p.Type == environment.FLOAT {
 		result = environment.NewValue(fmt.Sprintf("%v", p.Val), false, p.Type)
+		result.FloatValue = p.Val.(float64)
 	} else if p.Type == environment.STRING {
 		newTmp := gen.NewTmp()
 		gen.AddAssign(newTmp, "H")
@@ -55,6 +57,14 @@ func (p Primitive) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 		result = environment.NewValue("", false, environment.BOOLEAN)
 		result.TrueLabel = append(result.TrueLabel, trueLabel)
 		result.FalseLabel = append(result.FalseLabel, falseLabel)
+	} else if p.Type == environment.NULL {
+		// Imprimir nil
+		gen.AddPrintf("c", "(char)110")
+		gen.AddPrintf("c", "(char)105")
+		gen.AddPrintf("c", "(char)108")
+		gen.AddPrintf("c", "(char)10")
+		gen.AddBr()
+		result = environment.NewValue("", false, environment.NULL)
 	}
 
 	return result

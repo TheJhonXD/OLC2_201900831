@@ -17,5 +17,16 @@ func NewFloat(line int, col int, value interfaces.Expression) Float {
 }
 
 func (f Float) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) environment.Value {
-	return environment.Value{}
+	var result environment.Value
+	result = f.Value.Ejecutar(ast, env, gen)
+
+	if result.Type == environment.INTEGER {
+		nuevo := gen.NewTmp()
+		gen.AddComment("Convirtiendo a entero")
+		gen.AddExpression(nuevo, "(float)"+result.Value, "0", "+")
+		result.Value = nuevo
+		result.Type = environment.FLOAT
+	}
+
+	return result
 }

@@ -19,5 +19,14 @@ func NewParam(line int, col int, externalId string, internalId string, reference
 }
 
 func (p Param) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
-	return environment.Value{}
+	if p.ExternalId == "" {
+		p.ExternalId = p.InternalId
+	}
+	if p.Type == environment.NULL {
+		ast.AddError(p.Line, p.Col, env.(environment.Env).Id, "Error en la definicion de parametros")
+	}
+	var result environment.Value
+	result = environment.NewValue(p.InternalId, false, p.Type)
+	return result
+	// return environment.SymbolFuncParam{Line: p.Line, Col: p.Col, ExternalId: p.ExternalId, InternalId: p.InternalId, Reference: p.Reference, Type: p.Type}
 }

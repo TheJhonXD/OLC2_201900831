@@ -72,7 +72,6 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 	}
 
 	var op1, op2, result environment.Value
-
 	newTmp := gen.NewTmp()
 	// fmt.Println("OP1: ", op1.Type, " OP2: ", op2.Type)
 	switch o.Operator {
@@ -87,6 +86,13 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 				gen.AddExpression(newTmp, op1.Value, op2.Value, "+")
 				result = environment.NewValue(newTmp, true, dominante)
 				result.IntValue = op1.IntValue + op2.IntValue
+				//! Se hicieron cambios, si no dan las sumas de los archivos de prueba de basicos, regresarlo
+				result.FloatValue = op1.FloatValue + op2.FloatValue
+				if dominante == environment.INTEGER {
+					result.IntValue += int(result.FloatValue)
+				} else {
+					result.FloatValue += float64(result.IntValue)
+				}
 				return result
 			} else if dominante == environment.STRING {
 				fmt.Println("Concatenando")
